@@ -15,6 +15,8 @@ mongoose.connect('mongodb+srv://nan22052004:an22@cluster0.rhjpd.mongodb.net/movi
   .then(() => console.log('>>>>>>>>>> DB Connected!!!!!!'))
   .catch(err => console.log('>>>>>>>>> DB Error: ', err));
   var user = require('./routes/user')
+  var genre = require('./routes/genre')
+  var cinema = require('./routes/cinema')
 var app = express();
 
 // view engine setup
@@ -29,6 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.use('/', indexRouter);
 app.use('/user', user);
+app.use('/genre', genre);
+app.use('/cinema', cinema);
 
 
 // catch 404 and forward to error handler

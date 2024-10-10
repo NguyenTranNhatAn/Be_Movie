@@ -3,7 +3,7 @@ var router = express.Router();
 var UserController = require('../module/Users/UserController')
 /* GET users listing. */
 
-router.post('/api/register', async function (req, res) {
+router.post('/register', async function (req, res) {
   try {
 
     const { name, phone, email, password } = req.body;
@@ -21,7 +21,7 @@ router.post('/api/register', async function (req, res) {
     res.status(414).json({ status: 'false', user: user, mess:mess });
   }
 })
-router.post('/api/login', async function (req, res) {
+router.post('/login', async function (req, res) {
   try {
 
     const { email, password } = req.body;
