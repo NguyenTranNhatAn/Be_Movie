@@ -14,4 +14,4 @@ const add = async (name,address) => {
     await cinema.save()
     return cinema;
 }
-module.exports ={add}
+module.exports ={add,getAll}

@@ -11,4 +11,15 @@ router.post('/add', async function(req, res, next) {
         res.status(414).json({ cinema: { name: null, parentId: null } });
     }
   });
+
+  router.get('/getAll', async function (req, res) {
+    try {
+        const cinema = await CinemaController.getAll()
+        res.status(200).json(cinema)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ cinema: { name: null, parentId: null } });
+    }
+})
 module.exports = router;
