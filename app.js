@@ -1,12 +1,13 @@
 var createError = require('http-errors');
 var express = require('express');
+const cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
-var cors = require('cors');
 const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://nan22052004:an22@cluster0.rhjpd.mongodb.net/movie', {
   useNewUrlParser: true,
@@ -17,8 +18,9 @@ mongoose.connect('mongodb+srv://nan22052004:an22@cluster0.rhjpd.mongodb.net/movi
   var user = require('./routes/user')
   var genre = require('./routes/genre')
   var cinema = require('./routes/cinema')
+  var room = require('./routes/room')
 var app = express();
-
+app.use(cors());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -28,11 +30,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
 app.use('/', indexRouter);
 app.use('/user', user);
 app.use('/genre', genre);
 app.use('/cinema', cinema);
+app.use('/room', room);
 
 
 // catch 404 and forward to error handler
