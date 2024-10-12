@@ -8,7 +8,7 @@ router.post('/add', async function(req, res, next) {
         const movie = await MovieController.add(name,duration,release_date,trailer,images,description,rating,genreId);
         res.status(200).json(movie)
     } catch (error) {
-        res.status(414).json({ movie: { name: null, parentId: null } });
+        res.status(414).json({status:"false" } );
     }
   });
 
@@ -19,7 +19,31 @@ router.post('/add', async function(req, res, next) {
 
     } catch (error) {
         console.log(error);
-        res.status(414).json({ movie: { name: null, parentId: null } });
+        res.status(414).json({status:"false" } );
     }
 })
+router.get('/getDetail', async function (req, res) {
+    try {
+        const {_id} =req.query
+        const movie = await MovieController.getDetail(_id)
+        res.status(200).json(movie)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
+router.get('/find', async function (req, res) {
+    try {
+  
+      const { name } = req.query;
+      var movie;
+      movie = await MovieController.search(name);
+      res.status(200).json(movie)
+     
+    } catch (error) {
+      console.log(error);
+      res.status(404).json({ status: 'false' });
+    }
+  })
 module.exports = router;

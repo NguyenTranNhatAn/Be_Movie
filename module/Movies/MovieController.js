@@ -10,10 +10,27 @@ const getAll = async () => {
     }
     
 }
+const getDetail = async (_id) => {
+    try {
+        const movie = await MovieModel.findOne({ _id: _id });
+        return movie;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 const add = async (name,duration,release_date,trailer,images,description,rating,genreId) => {
     const movie= new MovieModel({name,duration,release_date,trailer,images,description,rating,genreId  });
     await movie.save()
     return movie;
 }
-module.exports ={add,getAll}
+const search = async (name) => {
+    try {      
+        const movie = await MovieModel.find({ name:{  $regex: `${name}`,$options :'i'} });
+        return movie;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports ={add,getAll,getDetail,search}

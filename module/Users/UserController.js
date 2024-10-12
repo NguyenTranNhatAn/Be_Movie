@@ -2,14 +2,14 @@ const UserModel = require('./UserModel');
 const bcrypt = require('bcryptjs');
 
 
-const register = async (name, phone, email, password,) => {
+const register = async (name, phone, email, password,address) => {
     //1. Taọ user mới
     //2.lưu user mới
     //3. Trả về user mới
     const salt = bcrypt.genSaltSync(10);
      
     const hash = bcrypt.hashSync(password,salt);
-    const user = new UserModel({name,email,phone,password:hash});
+    const user = new UserModel({name,email,address,phone,password:hash});
     await user.save();
     return user;
 };
@@ -37,4 +37,13 @@ const login = async (email, password) => {
         throw error; // Xử lý lỗi nếu có
     }
 };
-module.exports={login,register}
+const update = async (_id,name,email,address,phone) => {
+    try {
+        const user = UserModel.findByIdAndUpdate(_id, {name,email,address,phone});
+        
+        return user;
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports={login,register,update}
