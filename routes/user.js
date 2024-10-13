@@ -53,5 +53,18 @@ router.post('/update', async function (req, res) {
       res.status(414).json({ status: 'false' });
   }
 })
+router.post('/updateUser', async function (req, res) {
+  try {
+      const { _id, name, email, address, phone } = req.body;
+      
+      // Gọi hàm updateUser từ controller
+      const user = await UserController.updateUser(_id, name, email, address, phone);
 
+      return res.status(200).json({ status: true, user: user });
+  } catch (error) {
+      console.log(error);
+      // Trả về lỗi nếu có vấn đề xảy ra trong quá trình cập nhật
+      return res.status(500).json({ status: false, error: error.message });
+  }
+});
 module.exports = router;

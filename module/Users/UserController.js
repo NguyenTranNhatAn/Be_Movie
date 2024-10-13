@@ -2,14 +2,14 @@ const UserModel = require('./UserModel');
 const bcrypt = require('bcryptjs');
 
 
-const register = async (name, phone, email, password,address) => {
+const register = async (name, phone, email, password, address) => {
     //1. Taọ user mới
     //2.lưu user mới
     //3. Trả về user mới
     const salt = bcrypt.genSaltSync(10);
-     
-    const hash = bcrypt.hashSync(password,salt);
-    const user = new UserModel({name,email,address,phone,password:hash});
+
+    const hash = bcrypt.hashSync(password, salt);
+    const user = new UserModel({ name, email, address, phone, password: hash });
     await user.save();
     return user;
 };
@@ -37,13 +37,49 @@ const login = async (email, password) => {
         throw error; // Xử lý lỗi nếu có
     }
 };
-const update = async (_id,name,email,address,phone) => {
+const update = async (_id, name, email, address, phone) => {
     try {
-        const user = UserModel.findByIdAndUpdate(_id, {name,email,address,phone});
-        
+        const user = UserModel.findByIdAndUpdate(_id, { name, email, address, phone });
+
         return user;
     } catch (error) {
         console.log(error);
     }
 }
-module.exports={login,register,update}
+const updateUser = async (_id, name, email, address, phone) => {
+    try {
+        let userid = await UserModel.findById(_id);
+        if (!userid) {
+            throw new Error('Id không hợp lệ!');
+        }
+
+        let checkEmail = await UserModel.findOne({ email, _id: { $ne: _id } });
+        if (checkEmail) {
+            throw new Error('Email đã được đăng kí');
+        }
+
+     
+        let checkPhone = await UserModel.findOne({ phone, _id: { $ne: _id } });
+        if (checkPhone) {
+            throw new Error('Số điện thoại đã được đăng kí');
+        }
+
+      
+        userid.name = name || userid.name;
+        userid.email = email || userid.email;
+        userid.address = address || userid.address;
+        userid.phone = phone || userid.phone;
+        
+      
+        await userid.save();
+
+        
+        return userid;
+
+    } catch (error) {
+       
+        throw new Error(error.message); 
+    }
+};
+
+module.exports = { login, register, update,updateUser }
