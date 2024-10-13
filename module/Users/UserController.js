@@ -53,13 +53,13 @@ const updateUser = async (_id, name, email, address, phone) => {
             throw new Error('Id không hợp lệ!');
         }
 
-        let checkEmail = await UserModel.findOne({ email, _id: { $ne: _id } });
+        let checkEmail = await UserModel.findOne({ email});
         if (checkEmail) {
             throw new Error('Email đã được đăng kí');
         }
 
      
-        let checkPhone = await UserModel.findOne({ phone, _id: { $ne: _id } });
+        let checkPhone = await UserModel.findOne({ phone });
         if (checkPhone) {
             throw new Error('Số điện thoại đã được đăng kí');
         }
