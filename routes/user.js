@@ -14,7 +14,7 @@ router.post('/register', async function (req, res) {
     user = await UserController.register(name, phone ,email, password,address);
 
  
-    res.status(200).json({ status: status,mess:mess })
+    res.status(200).json({ status: status,user:user })
   } catch (error) {
     mess ='Đăng kí không thành công'
     console.log(error);
