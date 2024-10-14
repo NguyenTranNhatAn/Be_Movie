@@ -20,6 +20,8 @@ mongoose.connect('mongodb+srv://nan22052004:an22@cluster0.rhjpd.mongodb.net/movi
   var cinema = require('./routes/cinema')
   var room = require('./routes/room')
   var movie = require('./routes/movie')
+  
+
 var app = express();
 app.use(cors());
 // view engine setup
