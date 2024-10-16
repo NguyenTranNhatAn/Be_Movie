@@ -4,7 +4,9 @@ const cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const dotenv = require('dotenv');
 
+dotenv.config(); // Load các biến môi trường từ .env
 
 
 var usersRouter = require('./routes/user');
@@ -15,13 +17,17 @@ mongoose.connect('mongodb+srv://nan22052004:an22@cluster0.rhjpd.mongodb.net/movi
 })
   .then(() => console.log('>>>>>>>>>> DB Connected!!!!!!'))
   .catch(err => console.log('>>>>>>>>> DB Error: ', err));
-  var user = require('./routes/user')
-  var genre = require('./routes/genre')
-  var cinema = require('./routes/cinema')
-  var room = require('./routes/room')
-  var movie = require('./routes/movie')
-  
-
+var user = require('./routes/user')
+var genre = require('./routes/genre')
+var cinema = require('./routes/cinema')
+var room = require('./routes/room')
+var movie = require('./routes/movie')
+//danh làm {
+const roomRoutes = require('./routes/roomRoutes');
+const showTimeRoutes = require('./routes/showtimeRoutes');
+const authRoutes = require('./routes/auth');
+const loginRoutes = require('./routes/loginRoutes');
+//danh làm }
 var app = express();
 app.use(cors());
 // view engine setup
@@ -38,15 +44,20 @@ app.use('/genre', genre);
 app.use('/cinema', cinema);
 app.use('/room', room);
 app.use('/movie', movie);
-
+//danh làm {
+app.use('/room', roomRoutes);
+app.use('/showtimes', showTimeRoutes);
+app.use('/api', authRoutes);
+app.use('/api', loginRoutes);
+//danh làm }
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
