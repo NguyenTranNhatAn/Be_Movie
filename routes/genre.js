@@ -25,7 +25,7 @@ router.get('/getDetail', async function (req, res) {
     try {
         const {_id}= req.query
         const movie = await GenreController.getDetail(_id)
-        return res.status(200).json({movie})
+        return res.status(200).json(movie)
 
     } catch (error) {
         console.log(error);
