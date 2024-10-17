@@ -8,7 +8,6 @@ const dotenv = require('dotenv');
 
 dotenv.config(); // Load các biến môi trường từ .env
 
-
 var usersRouter = require('./routes/user');
 const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://nan22052004:an22@cluster0.rhjpd.mongodb.net/movie', {
@@ -25,7 +24,6 @@ var movie = require('./routes/movie')
 //danh làm {
 const roomRoutes = require('./routes/roomRoutes');
 const showTimeRoutes = require('./routes/showtimeRoutes');
-const authRoutes = require('./routes/auth');
 const loginRoutes = require('./routes/loginRoutes');
 //danh làm }
 var app = express();
@@ -46,8 +44,7 @@ app.use('/room', room);
 app.use('/movie', movie);
 //danh làm {
 app.use('/room', roomRoutes);
-app.use('/showtimes', showTimeRoutes);
-app.use('/api', authRoutes);
+app.use('/showtimes', showTimeRoutes);;
 app.use('/api', loginRoutes);
 //danh làm }
 

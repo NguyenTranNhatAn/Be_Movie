@@ -1,10 +1,6 @@
 // routes/roomRoutes.js
 const express = require('express');
 const mongoose = require('mongoose');
-const Room = require('../models/Room');
-const Seat = require('../models/Seat');
-const TypeSeat = require('../models/TypeSeat');
-const Cinema = require('../models/Cinema');
 
 const router = express.Router();
 

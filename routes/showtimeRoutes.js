@@ -1,9 +1,7 @@
 // routes/showtimeRoutes.js
 const express = require('express');
 const mongoose = require('mongoose');
-const ShowTime = require('../models/ShowTime');
-const Room = require('../models/Room');
-const Seat = require('../models/Seat');
+
 
 const router = express.Router();
 
