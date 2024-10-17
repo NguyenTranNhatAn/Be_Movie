@@ -14,7 +14,7 @@ router.post('/add', async function(req, res, next) {
   router.get('/getAll', async function (req, res) {
     try {
         const movie = await GenreController.getAll()
-        return res.status(200).json({movie})
+        return res.status(200).json(movie)
 
     } catch (error) {
         console.log(error);
