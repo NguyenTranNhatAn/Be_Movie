@@ -21,6 +21,7 @@ var genre = require('./routes/genre')
 var cinema = require('./routes/cinema')
 var room = require('./routes/room')
 var movie = require('./routes/movie')
+var review = require('./routes/review')
 //danh làm {
 const roomRoutes = require('./routes/roomRoutes');
 const showTimeRoutes = require('./routes/showtimeRoutes');
@@ -42,6 +43,7 @@ app.use('/genre', genre);
 app.use('/cinema', cinema);
 app.use('/room', room);
 app.use('/movie', movie);
+app.use('/review', review);
 //danh làm {
 app.use('/room', roomRoutes);
 app.use('/showtimes', showTimeRoutes);;
