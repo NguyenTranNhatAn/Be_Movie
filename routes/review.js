@@ -6,9 +6,9 @@ router.post('/add', async function(req, res, next) {
     try {
         const {comment,rating,userId,movieId}=req.body;
         const review = await ReviewController.add(comment,rating,userId,movieId);
-        res.status(200).json(review)
+        res.status(200).json({review,message:"thêm thành công"})
     } catch (error) {
-        res.status(414).json({status:"false" } );
+        res.status(414).json({message:"Thêm review thất bại" } );
     }
   });
 
