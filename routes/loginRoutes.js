@@ -84,7 +84,6 @@ router.post('/change-password', async (req, res) => {
         // Cập nhật mật khẩu mới
         user.password = hashedNewPassword;
         await user.save();
-
         res.status(200).json({ message: 'Đổi mật khẩu thành công!' });
     } catch (error) {
         res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
