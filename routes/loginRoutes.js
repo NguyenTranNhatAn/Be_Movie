@@ -103,12 +103,18 @@ router.post('/edit-profile', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'Người dùng không tồn tại.' });
         }
-        let checkEmail = await User.findOne({ email});
+        const checkEmail = await User.findOne({
+            email: email,
+            _id: { $ne: decoded.id }  // Loại trừ chính người dùng hiện tại
+          });
         if (checkEmail) {
             return res.status(404).json({ message: 'Email đã được đăng kí.' });
         }
-        let checkPhone = await User.findOne({ phone});
-        if (phone) {
+        const checkPhone = await User.findOne({
+            phone: phone,
+            _id: { $ne: decoded.id } 
+          });
+        if (checkPhone) {
             return res.status(404).json({ message: 'Số điện thoại đã được đăng kí.' });
         }
         user.name = name || user.name;
