@@ -105,7 +105,6 @@ var review = require('./routes/review')
 const roomRoutes = require('./routes/roomRoutes');
 const showTimeRoutes = require('./routes/showtimeRoutes');
 const loginRoutes = require('./routes/loginRoutes');
-const typeSeatRoutes = require('./routes/typeSeatRoutes');
 //danh làm:
 
 const app = express();
@@ -504,7 +503,6 @@ app.use('/review', review);
 app.use('/room', roomRoutes);
 app.use('/showtimes', showTimeRoutes);;
 app.use('/api', loginRoutes);
-app.use('/typeseat', typeSeatRoutes);
 //danh làm:
 
 // Catch 404 and forward to error handler
