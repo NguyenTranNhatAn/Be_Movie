@@ -89,4 +89,37 @@ router.post('/change-password', async (req, res) => {
         res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
     }
 });
+router.post('/edit-profile', async (req, res) => {
+    const {   } = req.body;
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Bạn cần đăng nhập để thực hiện thao tác này.' });
+    }
+
+    try {
+        // Giải mã token để lấy user ID
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+        }
+
+        // Kiểm tra mật khẩu cũ
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Mật khẩu cũ không đúng.' });
+        }
+
+        // Mã hóa mật khẩu mới
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Cập nhật mật khẩu mới
+        user.password = hashedNewPassword;
+        await user.save();
+        res.status(200).json({ message: 'Đổi mật khẩu thành công!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
+    }
+});
 module.exports = router;
