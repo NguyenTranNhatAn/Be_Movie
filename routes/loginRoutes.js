@@ -84,8 +84,31 @@ router.post('/change-password', async (req, res) => {
         // Cập nhật mật khẩu mới
         user.password = hashedNewPassword;
         await user.save();
-
         res.status(200).json({ message: 'Đổi mật khẩu thành công!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
+    }
+});
+router.post('/edit-profile', async (req, res) => {
+    const {name, email, address, phone } = req.body;
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Bạn cần đăng nhập để thực hiện thao tác này.' });
+    }
+
+    try {     
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+        }
+        user.name = name || user.name;
+        user.email = email || user.email;
+        user.address = address || user.address;
+        user.phone = phone || user.phone;
+        const newUser= await user.save()
+        res.status(200).json({ message: 'Đổi thông tin thành công!', user:newUser});
     } catch (error) {
         res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
     }
