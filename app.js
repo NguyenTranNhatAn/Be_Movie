@@ -28,7 +28,8 @@ var cinema = require('./routes/cinema')
 var room = require('./routes/room')
 var movie = require('./routes/movie')
 var review = require('./routes/review')
-//danh làm {
+var admin = require('./routes/admin')
+
 
 const roomRoutes = require('./routes/roomRoutes');
 const showTimeRoutes = require('./routes/showtimeRoutes');
@@ -244,6 +245,7 @@ app.use('/cinema', cinema);
 app.use('/room', room);
 app.use('/movie', movie);
 app.use('/review', review);
+app.use('/admin', admin);
 //danh làm {
 
 //danh làm:
