@@ -46,10 +46,10 @@ router.get('/find', async function (req, res) {
       res.status(404).json({ status: 'false' });
     }
   })
-  router.get('/update', async function (req, res) {
+  router.post('/update', async function (req, res) {
     try {
 
-        const {_id,name,duration,release_date,trailer,images,description,rating,genreId} = req.query;
+        const {_id,name,duration,release_date,trailer,images,description,rating,genreId} = req.body;
         const movie= await MovieController.update(_id,name,duration,release_date,trailer,images,description,rating,genreId)
        
         res.status(200).json({ status: 'true', movie:movie })
