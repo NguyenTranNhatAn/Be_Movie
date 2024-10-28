@@ -81,5 +81,13 @@ const updateUser = async (_id, name, email, address, phone) => {
         throw new Error(error.message); 
     }
 };
-
-module.exports = { login, register, update,updateUser }
+const getAll = async () => {
+    try {
+        const user = await UserModel.find({}).select('-password');
+        return user;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+module.exports = { login, register, update,updateUser ,getAll}

@@ -52,10 +52,23 @@ router.get('/find', async function (req, res) {
         const {_id,name,duration,release_date,trailer,images,description,rating,genreId} = req.body;
         const movie= await MovieController.update(_id,name,duration,release_date,trailer,images,description,rating,genreId)
        
-        res.status(200).json({ status: 'true', movie:movie })
+        res.status(200).json({ status: 'true', movie:{_id,name,duration,release_date,trailer,images,description,rating,genreId} })
     } catch (error) {
         console.log(error);
         res.status(414).json({ status: 'false', error:'Không thể sửa chữa' });
     }
 })
+router.get('/delete', async function (req, res) {
+    try {
+
+        const { _id } = req.query;
+        let movie;
+        movie = await MovieController.remove(_id);
+        res.status(200).json({ status: 'true' ,message:'Xóa Thành công'})
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: 'false',message:"Xóa thất bại" });
+    }
+})
+
 module.exports = router;

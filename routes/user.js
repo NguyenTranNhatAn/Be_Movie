@@ -18,7 +18,16 @@ let transporter = nodemailer.createTransport({
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
+router.get('/getAll', async function (req, res) {
+  try {
+      const user = await UserController.getAll()
+      res.status(200).json( user )
 
+  } catch (error) {
+      console.log(error);
+      res.status(414).json({ user: { name: null, cat_id: null } });
+  }
+})
 // Register API with OTP
 router.post('/register', async (req, res) => {
   try {
