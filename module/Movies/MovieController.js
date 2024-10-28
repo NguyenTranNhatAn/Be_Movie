@@ -18,7 +18,14 @@ const getDetail = async (_id) => {
         console.log(error);
     }
 }
-
+const update = async (_id,name,duration,release_date,trailer,images,description,rating,genreId) => {
+    try {
+        const movie = ProductsModel.findByIdAndUpdate(_id, {name,duration,release_date,trailer,images,description,rating,genreId});
+        return movie;
+    } catch (error) {
+        console.log(error);
+    }
+}
 const add = async (name,duration,release_date,trailer,images,description,rating,genreId) => {
     const movie= new MovieModel({name,duration,release_date,trailer,images,description,rating,genreId  });
     await movie.save()
@@ -33,4 +40,4 @@ const search = async (name) => {
     }
 }
 
-module.exports ={add,getAll,getDetail,search}
+module.exports ={add,getAll,getDetail,search,update}
