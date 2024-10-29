@@ -1,3 +1,4 @@
+const UserModel = require("../Users/UserModel");
 const MovieModel = require("./MovieModel");
 
 
@@ -46,5 +47,31 @@ const search = async (name) => {
         console.log(error);
     }
 }
+const addWishList =async(_id,movieId)=>{
+    try {
+        const user = await UserModel.findById(_id);
+       
+        const added= user.wishlist.find((id)=>id.toString()===movieId);
+       
+        if (added){
+            let user= await UserModel.findByIdAndUpdate(_id,{
+                $pull:{wishlist:movieId}
+            },
+            {new:true}
+        )
+        return {user,message:'Xóa thành công'};
+        }
+        else{
+            let user= await UserModel.findByIdAndUpdate(_id,{
+                $push:{wishlist:movieId}
+            },
+            {new:true})  
+            return {user,message:'Thêm thành công'};
+        }
+        
+    } catch (error) {
+        
+    }
+}
 
-module.exports ={add,getAll,getDetail,search,update,remove}
+module.exports ={add,getAll,getDetail,search,update,remove,addWishList}

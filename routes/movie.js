@@ -70,5 +70,17 @@ router.get('/delete', async function (req, res) {
         res.status(414).json({ status: 'false',message:"Xóa thất bại" });
     }
 })
+router.get('/addWishList', async function (req, res) {
+    try {
+
+        const { _id,movieId } = req.query;
+        const  user = await MovieController.addWishList(_id,movieId);
+        console.log(user)
+        res.status(200).json({ status: 'true' ,...user})
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: 'false',message:"Có lỗi" });
+    }
+})
 
 module.exports = router;
