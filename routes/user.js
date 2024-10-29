@@ -28,8 +28,23 @@ router.get('/getAll', async function (req, res) {
       res.status(414).json({ user: { name: null, cat_id: null } });
   }
 })
+router.post('/register', async function (req, res) {
+  try {
+    const { name, phone, email, password,address } = req.body;
+  var status="true";
+  var mess;
+  user = await UserController.register(name, phone ,email, password,address);
+  res.status(200).json({ status: status,user:user })
+  } catch (error) {
+    mess ='Đăng kí không thành công'
+    console.log(error);
+    res.status(414).json({status:"false" } ); 
+  }
+  
+
+})
 // Register API with OTP
-router.post('/register', async (req, res) => {
+router.post('/registerDanh', async (req, res) => {
   try {
     const { name, email, phone, password, address } = req.body;
     let otp = generateOTP();
