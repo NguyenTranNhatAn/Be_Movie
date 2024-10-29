@@ -12,7 +12,7 @@ const getAll = async () => {
     
 }
 
-const add = async (name,description) => {
+const add = async (name,totalSeat,roomShape,cinema_id) => {
     const room= new RoomModel({name,totalSeat,roomShape,cinema_id});
     await room.save()
     return room;

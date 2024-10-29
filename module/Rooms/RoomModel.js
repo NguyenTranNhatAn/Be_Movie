@@ -6,7 +6,6 @@ const RoomSchema = new Schema({
     totalSeat: { type: Number, default: 0 },
     roomShape: String,// Layout ghế
     cinema_id: { type: ObjectId, ref: 'cinema' },
-    seatTypes: [{ type: ObjectId, ref: 'seatType' }],// Liên kết với loại ghế
      
 });
 

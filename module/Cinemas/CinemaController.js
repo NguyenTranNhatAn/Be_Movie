@@ -9,9 +9,19 @@ const getAll = async () => {
     
 }
 
-const add = async (name,address) => {
-    const cinema= new CinemaModel({name,address});
+const add = async (name,address,brandId) => {
+    const cinema= new CinemaModel({name,address,brandId});
     await cinema.save()
     return cinema;
 }
-module.exports ={add,getAll}
+const findByBrand = async (brandId) => {
+    try {
+        const cinemas = await CinemaModel.find({brandId:brandId});
+        return cinemas;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+
+module.exports ={add,getAll,findByBrand}
