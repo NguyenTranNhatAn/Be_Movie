@@ -22,4 +22,48 @@ router.post('/add', async function(req, res, next) {
         res.status(414).json({status:"false" } );
     }
 })
+router.get('/getMovieShowtime', async function (req, res) {
+    try {
+        const { movieId,day } = req.query;
+        const showtimes = await ShowtimeController.getMovieShowtime(movieId,day);
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
+router.get('/getBrandShowtime', async function (req, res) {
+    try {
+        const { movieId,day } = req.query;
+        const showtimes = await ShowtimeController.getBrandByShowtime(movieId,day);
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
+router.get('/getCinemaMain', async function (req, res) {
+    try {
+        const { movieId,day,startHour, endHour, brandId } = req.query;
+        const showtimes = await ShowtimeController.getCinemasByTimeRangeBrandAndMovie(movieId,day,startHour, endHour, brandId);
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
+router.get('/getFilterTime', async function (req, res) {
+    try {
+        const { movieId,day } = req.query;
+        const showtimes = await ShowtimeController.getShowtimeTimeRangesByDay(movieId,day);
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
 module.exports = router;
