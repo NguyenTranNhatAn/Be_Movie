@@ -10,4 +10,5 @@ const ShowTimeSchema = new Schema({
     Room_Shape: { type: String, required: true }  // Layout ghế của phòng
 });
 
-module.exports = mongoose.model('showtime', ShowTimeSchema);
+// module.exports = mongoose.model('showtime', ShowTimeSchema);
+module.exports = mongoose.model('showtim', ShowTimeSchema);

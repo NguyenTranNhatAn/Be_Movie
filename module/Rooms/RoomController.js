@@ -17,4 +17,13 @@ const add = async (name,totalSeat,roomShape,cinema_id) => {
     await room.save()
     return room;
 }
-module.exports ={add}
+const listByCinema = async (cinema_id) => {
+    try {
+        const rooms = await RoomModel.find({cinema_id:cinema_id});
+        return rooms;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+module.exports ={add,listByCinema}

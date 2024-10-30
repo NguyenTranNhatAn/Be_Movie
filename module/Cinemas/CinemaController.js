@@ -24,4 +24,5 @@ const findByBrand = async (brandId) => {
     
 }
 
+
 module.exports ={add,getAll,findByBrand}

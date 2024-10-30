@@ -22,4 +22,15 @@ router.post('/add', async function(req, res, next) {
         res.status(414).json({status:"false" } );
     }
 })
+router.get('/getByCinema', async function (req, res) {
+    try {
+        const { cinema_id } = req.query;
+        const room = await RoomController.listByCinema(cinema_id)
+        res.status(200).json(room)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
 module.exports = router;

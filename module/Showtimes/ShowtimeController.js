@@ -12,19 +12,9 @@ const getAll = async () => {
     
 }
 
-const add = async (movieId,
-    roomId,
-    startTime,
-    endTime,
-    day,
-    Room_Shape,) => {
-    const room= new RoomModel({movieId,
-        roomId,
-        startTime,
-        endTime,
-        day,
-        Room_Shape});
-    await room.save()
-    return room;
+const add = async (movieId, roomId, startTime, endTime, day, Room_Shape,) => {
+    const showtime= new ShowtimeModel({movieId,roomId, startTime, endTime, day, Room_Shape});
+    await showtime.save()
+    return showtime;
 }
 module.exports ={add}
