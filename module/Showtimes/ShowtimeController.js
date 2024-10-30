@@ -116,7 +116,7 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
             path: 'roomId',
             populate: {
                 path: 'cinemaId',
-                match: brandId ? { brandId: brandId } : {}, // Lọc theo brandId nếu có
+                match: brandId ? { brandId: brandId } : {}, // Filter by brandId if present
                 model: 'cinema'
             }
         });
@@ -127,6 +127,8 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
 
         const cinemasMap = showtimes.reduce((acc, showtime) => {
             const cinema = showtime.roomId?.cinemaId;
+            const room = showtime.roomId;
+
             if (cinema) {
                 if (!acc[cinema._id]) {
                     acc[cinema._id] = {
@@ -136,7 +138,8 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
                 }
                 acc[cinema._id].showtimes.push({
                     startTime: showtime.startTime,
-                    endTime: showtime.endTime
+                    endTime: showtime.endTime,
+                    roomName: room?.name // Add room name to each showtime
                 });
             }
             return acc;
