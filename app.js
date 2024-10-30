@@ -30,6 +30,7 @@ var movie = require('./routes/movie')
 var review = require('./routes/review')
 var admin = require('./routes/admin')
 var brand = require('./routes/brand')
+var paymentRoute = require("./routes/payment");
 
 
 const roomRoutes = require('./routes/roomRoutes');
@@ -248,6 +249,7 @@ app.use('/movie', movie);
 app.use('/review', review);
 app.use('/admin', admin);
 app.use('/brand', brand);
+app.use("/payment", paymentRoute);
 //danh làm {
 
 //danh làm:
@@ -271,12 +273,15 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+//payment
+
 
 
 // Khởi động server
 server.listen(3006, () => {
   console.log('Server is running on http://localhost:3006');
 });
+
 
 module.exports = app;
 
