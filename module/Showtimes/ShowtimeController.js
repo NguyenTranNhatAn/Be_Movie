@@ -55,7 +55,8 @@ const getBrandByShowtime = async (movieId, day) => {
             day: {
                 $gte: startDate,
                 $lte: endDate,
-            }
+            },
+            
         })
         .populate({
             path: 'roomId',
