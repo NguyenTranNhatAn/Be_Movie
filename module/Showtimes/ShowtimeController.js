@@ -116,8 +116,12 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
             path: 'roomId',
             populate: {
                 path: 'cinemaId',
-                match: brandId ? { brandId: brandId } : {}, // Filter by brandId if present
-                model: 'cinema'
+                model: 'cinema',
+                populate: {
+                    path: 'brandId',
+                    model: 'brand'  // Populate brand details inside cinema
+                },
+                match: brandId ? { brandId: brandId } : {} // Filter by brandId if present
             }
         });
 
@@ -129,13 +133,14 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
             const cinema = showtime.roomId?.cinemaId;
             const room = showtime.roomId;
         
-
             if (cinema) {
                 if (!acc[cinema._id]) {
                     acc[cinema._id] = {
-                        cinema: cinema,
-                        showtimes: [],
-
+                        cinema: {
+                            ...cinema.toObject(),  // Convert Mongoose document to plain JS object to allow direct modifications
+                           
+                        },
+                        showtimes: []
                     };
                 }
                 acc[cinema._id].showtimes.push({
@@ -155,6 +160,7 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
         throw new Error('Lỗi khi lấy danh sách rạp chiếu');
     }
 };
+
 
 const getShowtimeTimeRangesByDay = async (movieId, day) => {
     try {
