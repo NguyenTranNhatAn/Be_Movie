@@ -146,7 +146,8 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
                 acc[cinema._id].showtimes.push({
                     startTime: showtime.startTime,
                     endTime: showtime.endTime,
-                    roomName: room?.name
+                    roomName: room?.name,
+                    showtimeId:showtime._id
                 });
             }
             return acc;
