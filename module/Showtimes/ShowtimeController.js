@@ -120,9 +120,9 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
                 model: 'cinema',
                 populate: {
                     path: 'brandId',
-                    model: 'brand'  // Populate brand details inside cinema
+                    model: 'brand'
                 },
-                match: brandId ? { brandId: brandId } : {} // Filter by brandId if present
+                match: brandId ? { brandId: brandId } : {}
             }
         });
 
@@ -138,8 +138,7 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
                 if (!acc[cinema._id]) {
                     acc[cinema._id] = {
                         cinema: {
-                            ...cinema.toObject(),  // Convert Mongoose document to plain JS object to allow direct modifications
-                           
+                            ...cinema.toObject(),
                         },
                         showtimes: []
                     };
@@ -147,13 +146,17 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
                 acc[cinema._id].showtimes.push({
                     startTime: showtime.startTime,
                     endTime: showtime.endTime,
-                    roomName: room?.name // Add room name to each showtime
+                    roomName: room?.name
                 });
             }
             return acc;
         }, {});
 
-        const cinemas = Object.values(cinemasMap);
+        // Convert cinemasMap to an array and sort each cinema's showtimes by start time
+        const cinemas = Object.values(cinemasMap).map(cinema => {
+            cinema.showtimes.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+            return cinema;
+        });
 
         return cinemas;
     } catch (error) {
