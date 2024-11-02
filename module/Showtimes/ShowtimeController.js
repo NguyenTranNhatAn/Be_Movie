@@ -82,7 +82,7 @@ const getBrandByShowtime = async (movieId, day) => {
             const brandName = showtime.roomId.cinemaId.brandId.name; // Giả sử brand có thuộc tính name
             const brandLogo=  showtime.roomId.cinemaId.brandId.logo;
             if (!brandCount[brandId]) {
-                brandCount[brandId] = { name: brandName, count: 1,logo:brandLogo };
+                brandCount[brandId] = { name: brandName, count: 1,logo:brandLogo,brandId:brandId };
             } else {
                 brandCount[brandId].count += 1;
             }
