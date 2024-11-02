@@ -172,11 +172,14 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
 
         // Định nghĩa các khoảng thời gian
         const timeRanges = [
-            { label: '9:00 - 12:00', start: 9, end: 12 },
-            { label: '12:00 - 15:00', start: 12, end: 15 },
-            { label: '15:00 - 18:00', start: 15, end: 18 },
-            { label: '18:00 - 21:00', start: 18, end: 21 },
-            { label: '21:00 - 24:00', start: 21, end: 24 }
+            { label: '16:00 - 19:00', start: 9, end: 12 },
+            { label: '19:00 - 22:00', start: 12, end: 15 },
+            { label: '22:00 - 1:00', start: 15, end: 18 },
+            { label: '1:00 - 4:00', start: 18, end: 21 },
+            { label: '4:00 - 7:00', start: 21, end: 24 },
+            { label: '7:00 - 10:00', start: 0, end: 3 },
+            { label: '10:00 - 12:00', start: 3, end: 5 },
+            { label: '12:00 - 16:00', start: 5, end: 9 },
         ];
 
         const showtimes = await ShowtimeModel.find({
