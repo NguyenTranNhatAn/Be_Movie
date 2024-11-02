@@ -170,7 +170,7 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
         startDate.setUTCHours(0, 0, 0, 0);
         endDate.setUTCHours(23, 59, 59, 999);
 
-        // Định nghĩa các khoảng thời gian
+        // Define time ranges
         const timeRanges = [
             { label: '1:00 - 4:00', start: 18, end: 21 },
             { label: '4:00 - 7:00', start: 21, end: 24 },
@@ -187,10 +187,10 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
             day: { $gte: startDate, $lte: endDate }
         });
 
-        // Tạo một mảng để lưu các khoảng thời gian đã sử dụng
+        // Set to track used time ranges
         const usedTimeRanges = new Set();
 
-        // Lọc các suất chiếu theo khoảng thời gian
+        // Filter showtimes by time range
         showtimes.forEach(showtime => {
             const showtimeHour = new Date(showtime.startTime).getUTCHours();
             timeRanges.forEach(range => {
@@ -200,11 +200,16 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
             });
         });
 
-        // Chuyển Set thành mảng
-        return Array.from(usedTimeRanges);
+        // Convert Set to array, sort by label in ascending order, and return
+        return Array.from(usedTimeRanges).sort((a, b) => {
+            const [aStart] = a.label.split(' - ');
+            const [bStart] = b.label.split(' - ');
+
+            return aStart.localeCompare(bStart, undefined, { numeric: true });
+        });
     } catch (error) {
         console.error(error);
-        throw new Error('Lỗi khi lấy danh sách khoảng thời gian suất chiếu');
+        throw new Error('Error retrieving showtime time ranges');
     }
 };
 
