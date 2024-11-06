@@ -75,11 +75,8 @@ const addWish =async(_id,movieId)=>{
 }
 const addWishList =async(movieId,id)=>{
     
-    try {
-        
-        const user = await UserModel.findById(id);
-       
-       
+    try {       
+        const user = await UserModel.findById(id);     
         const added= user.wishlist.find((id)=>id.toString()===movieId);
         console.log(add)
         if (added){
