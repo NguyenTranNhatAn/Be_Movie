@@ -81,6 +81,23 @@ const updateUser = async (_id, name, email, address, phone) => {
         throw new Error(error.message); 
     }
 };
+const getWishList = async (_id) => {
+    try {
+        let userid = await UserModel.findById(_id);
+        if (!userid) {
+            throw new Error('Id không hợp lệ!');
+        }
+        let wishlist = await UserModel.findById(_id).populate('wishlist');
+       
+
+        
+        return wishlist;
+
+    } catch (error) {
+       
+        throw new Error(error.message); 
+    }
+};
 const getAll = async () => {
     try {
         const user = await UserModel.find({}).select('-password');
@@ -90,4 +107,5 @@ const getAll = async () => {
     }
     
 }
-module.exports = { login, register, update,updateUser ,getAll}
+
+module.exports = { login, register, update,updateUser ,getAll,getWishList}
