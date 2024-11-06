@@ -47,7 +47,7 @@ const search = async (name) => {
         console.log(error);
     }
 }
-const addWishList =async(_id,movieId)=>{
+const addWish =async(_id,movieId)=>{
     try {
         const user = await UserModel.findById(_id);
        
@@ -73,5 +73,34 @@ const addWishList =async(_id,movieId)=>{
         
     }
 }
-
-module.exports ={add,getAll,getDetail,search,update,remove,addWishList}
+const addWishList =async(movieId,id)=>{
+    
+    try {
+        
+        const user = await UserModel.findById(id);
+       
+       
+        const added= user.wishlist.find((id)=>id.toString()===movieId);
+        console.log(add)
+        if (added){
+            let user= await UserModel.findByIdAndUpdate(id,{
+                $pull:{wishlist:movieId}
+            },
+            {new:true}
+        )
+       
+        return {user,message:'Xóa thành công'};
+        }
+        else{
+            let user= await UserModel.findByIdAndUpdate(id,{
+                $push:{wishlist:movieId}
+            },
+            {new:true})  
+            return {user,message:'Thêm thành công'};
+        }
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
+module.exports ={add,getAll,getDetail,search,update,remove,addWishList,addWish}

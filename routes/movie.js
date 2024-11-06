@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var MovieController = require('../module/Movies/MovieController')
+var MovieController = require('../module/Movies/MovieController');
+const jwt = require('jsonwebtoken');
+const { get } = require('mongoose');
+const UserModel = require('../module/Users/UserModel');
 
 router.post('/add', async function(req, res, next) {
     try {
@@ -82,5 +85,22 @@ router.get('/addWishList', async function (req, res) {
         res.status(414).json({ status: 'false',message:"Có lỗi" });
     }
 })
-
+router.get('/addWish', async function (req, res) {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Bạn cần đăng nhập để thực hiện thao tác này.' });
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const getUser = await UserModel.findById(decoded.id).select('-password');
+        
+        const { movieId } = req.query;
+        const  user = await MovieController.addWish(movieId,getUser._id);
+       
+        res.status(200).json({ status: 'true' ,...user})
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: 'false',message:"Có lỗi" });
+    }
+})
 module.exports = router;
