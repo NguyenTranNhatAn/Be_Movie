@@ -4,8 +4,9 @@ const MovieModel = require("./MovieModel");
 
 const getAll = async () => {
     try {
-        const moives = await MovieModel.find({});
-        return moives;
+        const movies = await MovieModel.find({});
+        const returnMovie = movies.filter(item => item.status !== false);
+        return returnMovie;
     } catch (error) {
         console.log(error);
     }
@@ -29,11 +30,21 @@ const update = async (_id,name,duration,release_date,trailer,images,description,
 }
 const remove = async (_id) => {
     try {
-        await MovieModel.deleteOne({ _id: _id })
+       
+        const movie = await MovieModel.findById(_id);
+        if (!movie) {
+            throw new Error('Phim không tồn tại');
+        }
+
+        // Cập nhật với strict: false để thêm thuộc tính không có trong schema
+        await MovieModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
+        
+        return movie;
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        throw error; 
     }
-}
+};
 const add = async (name,duration,release_date,trailer,images,description,rating,genreId) => {
     const movie= new MovieModel({name,duration,release_date,trailer,images,description,rating,genreId  });
     await movie.save()

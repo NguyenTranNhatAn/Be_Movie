@@ -9,8 +9,8 @@ const MovieSchema= new Schema({
     images:[Object],
     description:String,
     rating:Number,
-    genreId :{type: ObjectId, ref:'genre'}
-    
+    genreId :{type: ObjectId, ref:'genre'},
+    status:Boolean    
 });
 
 module.exports= mongoose.model('movie', MovieSchema);

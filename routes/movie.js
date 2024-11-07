@@ -70,7 +70,7 @@ router.get('/delete', async function (req, res) {
         res.status(200).json({ status: 'true' ,message:'Xóa Thành công'})
     } catch (error) {
         console.log(error);
-        res.status(414).json({ status: 'false',message:"Xóa thất bại" });
+        res.status(414).json({ status: 'false',message:error.message });
     }
 })
 // router.get('/addWishList', async function (req, res) {
