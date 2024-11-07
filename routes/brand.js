@@ -24,10 +24,10 @@ router.post('/update', async function (req, res) {
         res.status(414).json({ status: 'false', error: error.message });
     }
 })
-router.get('/delete', async function (req, res) {
+router.post('/delete', async function (req, res) {
     try {
 
-        const { _id } = req.query;
+        const { _id } = req.body;
         let brand;
         brand = await BrandController.remove(_id);
         res.status(200).json({ status: 'true' ,message:'Xóa Thành công'})

@@ -34,6 +34,9 @@ const remove = async (_id) => {
         const movie = await MovieModel.findById(_id);
         if (!movie) {
             throw new Error('Phim không tồn tại');
+        }   
+        if(movie.status==false){
+            throw new Error('Phim này đã được xóa');
         }
 
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema

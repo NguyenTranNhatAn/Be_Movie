@@ -34,6 +34,9 @@ const remove = async (_id) => {
         if (!brand) {
             throw new Error('Thương hiệu không tồn tại');
         }
+        if(brand.status==false){
+            throw new Error('Thương hiệu đã được xóa trước đó ');
+        }
 
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await BrandModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });

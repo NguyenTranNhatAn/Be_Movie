@@ -61,12 +61,13 @@ router.get('/find', async function (req, res) {
         res.status(414).json({ status: 'false', error:'Không thể sửa chữa' });
     }
 })
-router.get('/delete', async function (req, res) {
+router.post('/delete', async function (req, res) {
     try {
 
-        const { _id } = req.query;
+        const { _id } = req.body;
         let movie;
         movie = await MovieController.remove(_id);
+        
         res.status(200).json({ status: 'true' ,message:'Xóa Thành công'})
     } catch (error) {
         console.log(error);

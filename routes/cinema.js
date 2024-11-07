@@ -33,10 +33,10 @@ router.get('/getAll', async function (req, res) {
         res.status(414).json({ status: "false" });
     }
 })
-router.get('/delete', async function (req, res) {
+router.post('/delete', async function (req, res) {
     try {
 
-        const { _id } = req.query;
+        const { _id } = req.body;
         let cinema;
         cinema = await CinemaController.remove(_id);
         res.status(200).json({ status: 'true', message: 'Xóa Thành công' })

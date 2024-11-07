@@ -16,6 +16,9 @@ const remove = async (_id) => {
         if (!cinema) {
             throw new Error('Rap không tồn tại');
         }
+        if (cinema.status==false) {
+            throw new Error('Rạp đã được xóa trước đó');
+        }
 
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await CinemaModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
