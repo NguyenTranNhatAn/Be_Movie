@@ -7,7 +7,9 @@ const getAll = async () => {
         const rooms = await RoomModel.find({});
         return rooms;
     } catch (error) {
-        console.log(error);
+        console.log(""+error);
+
+    
     }
     
 }
