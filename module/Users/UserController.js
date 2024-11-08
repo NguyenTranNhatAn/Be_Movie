@@ -1,18 +1,8 @@
 const UserModel = require('./UserModel');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
 
 
-const register = async (name, phone, email, password, address) => {
-    //1. Taọ user mới
-    //2.lưu user mới
-    //3. Trả về user mới
-    const salt = bcrypt.genSaltSync(10);
-
-    const hash = bcrypt.hashSync(password, salt);
-    const user = new UserModel({ name, email, address, phone, password: hash });
-    await user.save();
-    return user;
-};
 const login = async (email, password) => {
     try {
         // Tìm user theo email
@@ -53,34 +43,35 @@ const updateUser = async (_id, name, email, address, phone) => {
             throw new Error('Id không hợp lệ!');
         }
 
-        let checkEmail = await UserModel.findOne({ email});
+        let checkEmail = await UserModel.findOne({ email });
         if (checkEmail) {
             throw new Error('Email đã được đăng kí');
         }
 
-     
+
         let checkPhone = await UserModel.findOne({ phone });
         if (checkPhone) {
             throw new Error('Số điện thoại đã được đăng kí');
         }
 
-      
+
         userid.name = name || userid.name;
         userid.email = email || userid.email;
         userid.address = address || userid.address;
         userid.phone = phone || userid.phone;
-        
-      
+
+
         await userid.save();
 
-        
+
         return userid;
 
     } catch (error) {
-       
-        throw new Error(error.message); 
+
+        throw new Error(error.message);
     }
 };
+<<<<<<< HEAD
 const getAll = async () => {
     try {
         const user = await UserModel.find({}).select('-password');
@@ -91,3 +82,7 @@ const getAll = async () => {
     
 }
 module.exports = { login, register, update,updateUser ,getAll}
+=======
+
+module.exports = { login, update, updateUser }
+>>>>>>> features/danh-pay-all

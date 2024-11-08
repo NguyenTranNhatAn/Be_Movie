@@ -36,6 +36,10 @@ var showtime = require('./routes/showtime')
 const roomRoutes = require('./routes/roomRoutes');
 const showTimeRoutes = require('./routes/showtimeRoutes');
 const loginRoutes = require('./routes/loginRoutes');
+const typeSeatRoutes = require('./routes/typeSeatRoutes');
+const playtimeRoutes = require('./routes/playtimeRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
+const zaloPayRoutes = require('./routes/zaloPayRoutes');
 //danh làm:
 
 const app = express();
@@ -47,188 +51,157 @@ const io = socketIo(server, {
   }
 });
 
+const ShowTime = require('./models/ShowTime');  // 
 
+const seatTimers = {}; // Bộ đếm thời gian cho mỗi ghế
+let originalSeatState = {}; // Trạng thái ban đầu của ghế
 
-
-const ShowTime = require('./models/ShowTime');
-const seatTimers = {}; // To keep track of seat selection timers
-let originalSeatState = {}; // Tạo đối tượng để lưu trạng thái ban đầu của ghế
-
+// Xử lý kết nối Socket.IO
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+  console.log('Người dùng kết nối:', socket.id);
+
+
 
   // Khi người dùng chọn ghế
-  socket.on('select_seat', async ({ showtimeId, row, col }) => {
-    
+  socket.on('select_seat', async ({ showtimeId, row, col, userId }) => {
     const showtime = await ShowTime.findById(showtimeId);
     if (!showtime) {
-      return socket.emit('error', { message: 'Showtime not found' });
+      return socket.emit('error', { message: 'Không tìm thấy suất chiếu' });
     }
 
-    let roomShapeArray = showtime.Room_Shape.split('/').map(row => row.split(''));
+    let roomShapeArray = showtime.Room_Shape.split('/').map((row) => row.split(''));
 
-    // Kiểm tra nếu ghế hiện đang trống (T: thường, V: VIP, D: Ghế đôi)
-    if (roomShapeArray[row][col] === 'T' || roomShapeArray[row][col] === 'V' || roomShapeArray[row][col] === 'D') {
-      // Lưu trạng thái ban đầu của ghế vào originalSeatState
-      originalSeatState[`${row}-${col}`] = roomShapeArray[row][col];
-      
-      // Update the seat and its adjacent pair if it's a double seat (D)
-      if (roomShapeArray[row][col] === 'D') {
-        const adjacentCol = col % 2 === 0 ? col + 1 : col - 1;
-        if (roomShapeArray[row][adjacentCol] === 'D') {
-          roomShapeArray[row][col] = 'P';
-          roomShapeArray[row][adjacentCol] = 'P';  // Update both seats to 'P' (pending)
-          showtime.Room_Shape = roomShapeArray.map(row => row.join('')).join('/');
-          await showtime.save();
+    if (roomShapeArray[row][col] === 'P' && originalSeatState[`${row}-${col}`]?.userId !== userId) {
+      return socket.emit('error', { message: 'Ghế đang được chọn bởi người dùng khác' });
+    }
 
-          // Emit event for both seats
-          io.emit('seat_selected', { row, col });
-          io.emit('seat_selected', { row, col: adjacentCol });
+    if (['T', 'V', 'D'].includes(roomShapeArray[row][col])) {
+      originalSeatState[`${row}-${col}`] = { state: roomShapeArray[row][col], userId };
+      roomShapeArray[row][col] = 'P'; // Đặt ghế thành đang chọn
+      showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
+      await showtime.save();
+      io.emit('seat_map_updated');  // Phát sự kiện để cập nhật sơ đồ ghế
 
-          // Set timers to revert the seats if payment is not made within 2 minutes
-          const seatId = `${showtimeId}-${row}-${col}`;
-          if (seatTimers[seatId]) {
-            clearTimeout(seatTimers[seatId]); // Clear previous timer if it exists
-          }
-
-          seatTimers[seatId] = setTimeout(async () => {
-            const updatedShowtime = await ShowTime.findById(showtimeId);
-            if (updatedShowtime) {
-              let updatedRoomShapeArray = updatedShowtime.Room_Shape.split('/').map(row => row.split(''));
-
-              // Revert seats back to original state (D)
-              updatedRoomShapeArray[row][col] = 'D';
-              updatedRoomShapeArray[row][adjacentCol] = 'D';
-              updatedShowtime.Room_Shape = updatedRoomShapeArray.map(row => row.join('')).join('/');
-              await updatedShowtime.save();
-
-              io.emit('seat_reverted', { row, col });
-              io.emit('seat_reverted', { row, col: adjacentCol });
-
-              delete seatTimers[seatId]; // Remove the timer after reverting the seat
-            }
-          }, 2 * 60 * 1000); // 2 minutes timer
-        }
-      } else {
-        roomShapeArray[row][col] = 'P'; // Set seat to Pending
-        showtime.Room_Shape = roomShapeArray.map(row => row.join('')).join('/');
-        await showtime.save();
-       
-        io.emit('seat_selected', { row, col });
-
-        // Set timer for single seat
-        const seatId = `${showtimeId}-${row}-${col}`;
-        if (seatTimers[seatId]) {
-          clearTimeout(seatTimers[seatId]);
-        }
-
-        seatTimers[seatId] = setTimeout(async () => {
-          const updatedShowtime = await ShowTime.findById(showtimeId);
-          if (updatedShowtime) {
-            let updatedRoomShapeArray = updatedShowtime.Room_Shape.split('/').map(row => row.split(''));
-
-            // Revert seat back to original state từ trạng thái ban đầu đã lưu
-            const originalState = originalSeatState[`${row}-${col}`];
-            if (originalState) {
-              updatedRoomShapeArray[row][col] = originalState; // Khôi phục trạng thái ban đầu
-              delete originalSeatState[`${row}-${col}`]; // Xóa trạng thái đã lưu sau khi sử dụng
-            }
-
-            updatedShowtime.Room_Shape = updatedRoomShapeArray.map(row => row.join('')).join('/');
-            await updatedShowtime.save();
-
-            io.emit('seat_reverted', { row, col });
-
-            delete seatTimers[seatId];
-          }
-        }, 2 * 60 * 1000); // 2 minutes timer
+      // Thêm bộ đếm thời gian 2 phút để hoàn tác trạng thái nếu không thanh toán
+      const seatId = `${showtimeId}-${row}-${col}`;
+      if (seatTimers[seatId]) {
+        clearTimeout(seatTimers[seatId]); // Xóa bộ đếm cũ nếu có
       }
-    } else if(roomShapeArray[row][col] === 'P') {
-       const updatedShowtime = await ShowTime.findById(showtimeId);
-          if (updatedShowtime) {
-            let updatedRoomShapeArray = updatedShowtime.Room_Shape.split('/').map(row => row.split(''));
-
-            // Revert seat back to original state từ trạng thái ban đầu đã lưu
-            const originalState = originalSeatState[`${row}-${col}`];
-            if (originalState) {
-              updatedRoomShapeArray[row][col] = originalState; // Khôi phục trạng thái ban đầu
-              delete originalSeatState[`${row}-${col}`]; // Xóa trạng thái đã lưu sau khi sử dụng
-            }
-
-            updatedShowtime.Room_Shape = updatedRoomShapeArray.map(row => row.join('')).join('/');
+      seatTimers[seatId] = setTimeout(async () => {
+        const updatedShowtime = await ShowTime.findById(showtimeId);
+        if (updatedShowtime) {
+          let updatedRoomShapeArray = updatedShowtime.Room_Shape.split('/').map((r) => r.split(''));
+          if (updatedRoomShapeArray[row][col] === 'P') {
+            updatedRoomShapeArray[row][col] = originalSeatState[`${row}-${col}`]?.state || 'T'; // Khôi phục trạng thái ban đầu
+            delete originalSeatState[`${row}-${col}`];
+            updatedShowtime.Room_Shape = updatedRoomShapeArray.map((r) => r.join('')).join('/');
             await updatedShowtime.save();
-
-            io.emit('seat_reverted', { row, col });
-    }}
-     else {
-      socket.emit('error', { message: 'Seat is not available' });
+            io.emit('seat_map_updated'); // Phát sự kiện cập nhật sơ đồ ghế
+            console.log(`Ghế (${row}, ${col}) đã được hoàn tác do không thanh toán trong 2 phút.`);
+          }
+        }
+      }, 20 * 1000); // 20 giây 
+    } else {
+      socket.emit('error', { message: 'Ghế này không khả dụng' });
     }
   });
 
   // Khi người dùng thanh toán ghế
-  socket.on('pay_for_seats', async ({ showtimeId, seats }) => {
+  socket.on('pay_for_seats', async ({ showtimeId, seats, userId }) => {
     const showtime = await ShowTime.findById(showtimeId);
     if (!showtime) {
-      return socket.emit('error', { message: 'Showtime not found' });
+      return socket.emit('error', { message: 'Không tìm thấy suất chiếu' });
     }
 
-    let roomShapeArray = showtime.Room_Shape.split('/').map(row => row.split(''));
+    let roomShapeArray = showtime.Room_Shape.split('/').map((row) => row.split(''));
 
     seats.forEach(({ row, col }) => {
-      if (roomShapeArray[row][col] === 'P') {
-        roomShapeArray[row][col] = 'U'; // Set seat to booked
+      if (roomShapeArray[row][col] === 'P' && originalSeatState[`${row}-${col}`]?.userId === userId) {
+        roomShapeArray[row][col] = 'U';  // Đánh dấu ghế đã đặt
       }
-
-      // Clear timers for the seats
       const seatId = `${showtimeId}-${row}-${col}`;
       if (seatTimers[seatId]) {
-        clearTimeout(seatTimers[seatId]);
+        clearTimeout(seatTimers[seatId]); // Xóa bộ đếm thời gian sau khi thanh toán
         delete seatTimers[seatId];
       }
     });
 
-    showtime.Room_Shape = roomShapeArray.map(row => row.join('')).join('/');
+    showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
     await showtime.save();
-
-    // Emit booking confirmation
-    seats.forEach(({ row, col }) => {
-      io.emit('seat_booked', { row, col });
-    });
+    io.emit('seat_map_updated');  // Phát sự kiện để cập nhật sơ đồ ghế
   });
 
 
   // Khi người dùng bỏ chọn ghế
-  socket.on('deselect_seat', async ({ showtimeId, row, col }) => {
+  socket.on('deselect_seat', async ({ showtimeId, row, col, userId }) => {
     const showtime = await ShowTime.findById(showtimeId);
     if (!showtime) {
-      return socket.emit('error', { message: 'Showtime not found' });
+      return socket.emit('error', { message: 'Không tìm thấy suất chiếu' });
     }
 
-    let roomShapeArray = showtime.Room_Shape.split('/').map(row => row.split(''));
+    let roomShapeArray = showtime.Room_Shape.split('/').map((row) => row.split(''));
 
-    // Khôi phục trạng thái ban đầu của ghế nếu ghế đang ở trạng thái "P" (pending)
-    let updatedRoomShapeArray = updatedShowtime.Room_Shape.split('/').map(row => row.split(''));
+    const original = originalSeatState[`${row}-${col}`];
+    if (roomShapeArray[row][col] === 'P' && original && original.userId === userId) {
+      roomShapeArray[row][col] = original.state;
+      delete originalSeatState[`${row}-${col}`];
+      showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
+      await showtime.save();
+      io.emit('seat_map_updated');  // Phát sự kiện để cập nhật sơ đồ ghế
+    } else {
+      socket.emit('error', { message: 'Ghế này không thuộc quyền của bạn để bỏ chọn' });
+    }
+  });
 
-            // Revert seat back to original state từ trạng thái ban đầu đã lưu
-            const originalState = originalSeatState[`${row}-${col}`];
-            if (originalState) {
-              updatedRoomShapeArray[row][col] = originalState; // Khôi phục trạng thái ban đầu
-              delete originalSeatState[`${row}-${col}`]; // Xóa trạng thái đã lưu sau khi sử dụng
-            }
+  // Khi người dùng thanh toán ghế
+  // Lắng nghe sự kiện 'payment_completed' từ client
+  socket.on('payment_completed', async ({ showtimeId, seats }) => {
+    console.log('Received payment_completed event:', showtimeId, seats);
+    try {
+      const showtime = await ShowTime.findById(showtimeId);
 
-            updatedShowtime.Room_Shape = updatedRoomShapeArray.map(row => row.join('')).join('/');
-            await updatedShowtime.save();
+      if (!showtime) {
+        socket.emit('error', { message: 'Showtime not found' });
+        return;
+      }
 
-            io.emit('seat_reverted', { row, col });
+      // Cập nhật trạng thái ghế trong layout Room_Shape
+      let updatedShape = showtime.Room_Shape.split('/');
+
+      seats.forEach(seat => {
+        const { row, col } = seat;
+        if (row < updatedShape.length) {
+          let rowSeats = updatedShape[row].split('');
+          if (col < rowSeats.length && rowSeats[col] === 'P') {
+            rowSeats[col] = 'U'; // Chuyển trạng thái ghế từ 'P' sang 'U'
+            updatedShape[row] = rowSeats.join('');
+          }
+        }
+      });
+
+      showtime.Room_Shape = updatedShape.join('/');
+      await showtime.save();
+
+      // Phát sự kiện thông báo cập nhật ghế thành công đến các client
+      socket.emit('seats_updated', { showtimeId, seats, status: 'U' });
+
+    } catch (error) {
+      console.error('Error updating seats:', error);
+      socket.emit('error', { message: 'Error updating seats' });
+    }
   });
 
 
-
-  // Khi người dùng ngắt kết nối
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    console.log('Người dùng ngắt kết nối:', socket.id);
   });
 });
+
+
+
+
+
+
 
 
 
@@ -246,16 +219,17 @@ app.use('/genre', genre);
 app.use('/cinema', cinema);
 app.use('/room', room);
 app.use('/movie', movie);
-app.use('/review', review);
-app.use('/admin', admin);
-app.use('/brand', brand);
-app.use('/showtime', showtime);
-//danh làm {
-
+app.use('/ticket', ticketRoutes);
 //danh làm:
 app.use('/room', roomRoutes);
 app.use('/showtimes', showTimeRoutes);;
 app.use('/api', loginRoutes);
+app.use('/typeseat', typeSeatRoutes);
+app.use('/api', playtimeRoutes);
+app.use('/order', zaloPayRoutes); // Prefix '/order' để quản lý các route liên quan đến đơn hàng
+app.use('/order', require('./routes/order-controller'));
+
+
 //danh làm:
 
 // Catch 404 and forward to error handler

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin người dùng</title>
+    <style>
+        /* CSS đơn giản cho trang thông tin */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px;
+            margin-top: 20px;
+        }
+        form {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f4f4f4;
+            border-radius: 8px;
+        }
+        input {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Thông tin người dùng</h1>
+    <div id="user-info"></div>
+
+    <!-- Form đổi mật khẩu -->
+    <h2>Đổi mật khẩu</h2>
+    <form id="change-password-form">
+        <input type="password" id="old-password" placeholder="Mật khẩu cũ" required>
+        <input type="password" id="new-password" placeholder="Mật khẩu mới" required>
+        <button type="submit">Đổi mật khẩu</button>
+    </form>
+
+    <button id="logout-button">Đăng xuất</button>
+
+    <script>
+        // Kiểm tra token khi tải trang
+        const token = localStorage.getItem('token');
+        console.log("token",token)
+        if (!token) {
+            window.location.href = 'danh_index.html'; // Chuyển về trang đăng nhập nếu không có token
+        }
+
+        // Lấy thông tin người dùng
+        async function getUserInfo() {
+            const response = await fetch('http://localhost:3000/api/user-info', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('user-info').innerHTML = `
+                    <p>Tên: ${data.name}</p>
+                    <p>Email: ${data.email}</p>
+                    <p>Số điện thoại: ${data.phone}</p>
+                    <p>Địa chỉ: ${data.address}</p>
+                `;
+            } else {
+                alert('Có lỗi xảy ra khi lấy thông tin người dùng.');
+            }
+        }
+
+        // Đổi mật khẩu
+        document.getElementById('change-password-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const oldPassword = document.getElementById('old-password').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ oldPassword, newPassword })
+                });
+
+                const data = await response.json();
+                alert(data.message);
+
+                if (response.ok) {
+                    localStorage.removeItem('token'); // Xóa token sau khi đổi mật khẩu thành công
+                    window.location.href = 'danh_index.html'; // Quay lại trang đăng nhập
+                }
+            } catch (error) {
+                console.error('Có lỗi xảy ra:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        });
+
+        // Đăng xuất
+        document.getElementById('logout-button').addEventListener('click', () => {
+            localStorage.removeItem('token'); // Xóa token
+            window.location.href = 'danh_index.html'; // Quay lại trang đăng nhập
+        });
+
+        // Gọi hàm để lấy thông tin người dùng
+        getUserInfo();
+    </script>
+</body>
+</html>

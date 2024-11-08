@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -252,6 +253,11 @@ const socket = io('http://localhost:3006');
 </html> -->
 <!DOCTYPE html>
 <html lang="en">
+=======
+<!DOCTYPE html>
+<html lang="en">
+
+>>>>>>> features/danh-pay-all
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -261,12 +267,20 @@ const socket = io('http://localhost:3006');
         body {
             font-family: Arial, sans-serif;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> features/danh-pay-all
         .seat-map {
             display: grid;
             grid-template-columns: repeat(12, 40px);
             grid-gap: 10px;
             margin-bottom: 20px;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> features/danh-pay-all
         .seat {
             width: 40px;
             height: 40px;
@@ -276,6 +290,7 @@ const socket = io('http://localhost:3006');
             border-radius: 5px;
             cursor: pointer;
         }
+<<<<<<< HEAD
         .seat.thuong { border-color: green; color: green; }
         .seat.vip { border-color: red; color: red; }
         .seat.doi { border-color: pink; color: pink; }
@@ -289,11 +304,64 @@ const socket = io('http://localhost:3006');
         .legend {
             margin-top: 20px;
         }
+=======
+
+        .seat.thuong {
+            border-color: green;
+            color: green;
+        }
+
+        .seat.vip {
+            border-color: red;
+            color: red;
+        }
+
+        .seat.doi {
+            border-color: pink;
+            color: pink;
+        }
+
+        .seat.booked {
+            background-color: gray;
+            color: white;
+        }
+
+        .seat.pending {
+            background-color: yellow;
+            color: black;
+        }
+
+        .seat.unavailable {
+            background-color: lightgray;
+            color: black;
+        }
+
+        .seat.selected {
+            background-color: red;
+            color: white;
+        }
+
+        .row-label {
+            grid-column: span 12;
+            text-align: left;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .legend {
+            margin-top: 20px;
+        }
+
+>>>>>>> features/danh-pay-all
         .legend div {
             margin-bottom: 10px;
             display: flex;
             align-items: center;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> features/danh-pay-all
         .legend span {
             display: inline-block;
             width: 20px;
@@ -301,6 +369,7 @@ const socket = io('http://localhost:3006');
             margin-right: 10px;
             border: 1px solid #000;
         }
+<<<<<<< HEAD
         .legend .thuong { background-color: white; border-color: green; }
         .legend .vip { background-color: white; border-color: red; }
         .legend .doi { background-color: white; border-color: pink; }
@@ -315,6 +384,51 @@ const socket = io('http://localhost:3006');
         <button id="pay-button">Thanh toán</button>
 
         <!-- Chú thích (Legend) -->
+=======
+
+        .legend .thuong {
+            background-color: white;
+            border-color: green;
+        }
+
+        .legend .vip {
+            background-color: white;
+            border-color: red;
+        }
+
+        .legend .doi {
+            background-color: white;
+            border-color: pink;
+        }
+
+        .legend .booked {
+            background-color: gray;
+        }
+
+        .legend .unavailable {
+            background-color: lightgray;
+        }
+
+        .legend .selected {
+            background-color: red;
+        }
+    </style>
+    </head>
+
+    <body>
+        <h1>Sơ đồ ghế</h1>
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" placeholder="Nhập User ID" />
+        <button onclick="loadSeatMap()">Load Seats</button>
+        <div id="seat-map" class="seat-map"></div>
+        <button id="pay-button">Thanh toán</button>
+
+        <div style="display: flex;flex-direction: row;margin-top: 120px;">
+            <label>Giá:</label>
+            <p id="priceId"></p>
+        </div>
+
+>>>>>>> features/danh-pay-all
         <div class="legend">
             <div><span class="seat thuong"></span> Thường</div>
             <div><span class="seat vip"></span> VIP</div>
@@ -327,6 +441,7 @@ const socket = io('http://localhost:3006');
         <script>
         const socket = io('http://localhost:3006');
         let selectedSeats = [];
+<<<<<<< HEAD
 
         // Hàm hiển thị sơ đồ ghế dựa trên layout nhận từ API
         function renderSeatMap(seatLayout) {
@@ -335,6 +450,23 @@ const socket = io('http://localhost:3006');
 
             const rows = seatLayout.split('/');
             let rowLabel = 'A'; // Bắt đầu từ hàng A
+=======
+        let showtimeId = '671f9fc341ad0fbcaddb1af3'; // ID suất chiếu mẫu
+        let seatTypePrices = {}; // Lưu trữ giá ghế theo loại ghế
+        function loadSeatMap() {
+            if (!document.getElementById('userId').value) {
+                alert('Vui lòng nhập User ID');
+                return;
+            }
+            fetchSeatLayout(showtimeId);
+        }
+
+        function renderSeatMap(seatLayout) {
+            const seatMapContainer = document.getElementById('seat-map');
+            seatMapContainer.innerHTML = '';
+            const rows = seatLayout.split('/');
+            let rowLabel = 'A';
+>>>>>>> features/danh-pay-all
 
             rows.forEach((row, rowIndex) => {
                 const rowLabelElement = document.createElement('div');
@@ -351,6 +483,7 @@ const socket = io('http://localhost:3006');
                     let seatPosition = `${rowLabel}${colIndex + 1}`;
                     seat.textContent = seatPosition;
 
+<<<<<<< HEAD
                     if (seatType === 'T') {
                         seat.classList.add('thuong');
                     } else if (seatType === 'V') {
@@ -367,20 +500,36 @@ const socket = io('http://localhost:3006');
                     }
 
                     // Xử lý sự kiện chọn ghế
+=======
+                    if (seatType === 'T') seat.classList.add('thuong');
+                    else if (seatType === 'V') seat.classList.add('vip');
+                    else if (seatType === 'D') seat.classList.add('doi');
+                    else if (seatType === 'U') seat.classList.add('booked');
+                    else if (seatType === 'P') seat.classList.add('pending');
+                    else if (seatType === '_') { seat.classList.add('unavailable'); seat.textContent = 'X'; }
+
+>>>>>>> features/danh-pay-all
                     seat.addEventListener('click', () => selectSeat(rowIndex, colIndex, seatType, seat));
                     seatMapContainer.appendChild(seat);
                 });
                 rowLabel = String.fromCharCode(rowLabel.charCodeAt(0) + 1);
             });
         }
+<<<<<<< HEAD
 
         // Hàm xử lý khi chọn/bỏ chọn ghế luân phiên
         function selectSeat(rowIndex, colIndex, seatType, seatElement) {
             // Kiểm tra nếu ghế đã được đặt hoặc không thể chọn
+=======
+        //kết thúc hàm renderSeatMap
+        function selectSeat(rowIndex, colIndex, seatType, seatElement) {
+            const userId = document.getElementById('userId').value;
+>>>>>>> features/danh-pay-all
             if (seatType === 'U' || seatType === '_') {
                 alert('Ghế này đã được đặt hoặc không thể chọn.');
                 return;
             }
+<<<<<<< HEAD
 
             // Nếu ghế đã được chọn, bỏ chọn ghế
             if (seatElement.classList.contains('selected')) {
@@ -446,11 +595,83 @@ const socket = io('http://localhost:3006');
         });
 
         // Lấy layout ghế từ API khi tải trang
+=======
+            // Hiển thị giá của ghế khi người dùng chọn
+            const seatPrice = seatTypePrices[seatType];
+            console.log('Selected seatType:', seatType); // Kiểm tra loại ghế
+            console.log('Price for seatType:', seatPrice); // Kiểm tra giá ghế
+
+            if (seatPrice) {
+                // alert(`Giá ghế: ${seatPrice} VND`);
+                document.getElementById('priceId').innerHTML = `${seatPrice} VND`;
+            }
+
+            if (seatElement.classList.contains('selected')) {
+                // Nếu ghế này đã được chọn (có class 'selected')
+                seatElement.classList.remove('selected'); // Bỏ chọn ghế
+                selectedSeats = selectedSeats.filter(seat => seat.row !== rowIndex || seat.col !== colIndex);
+                // Xóa ghế đó ra khỏi danh sách các ghế đã chọn
+                socket.emit('deselect_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
+                // Gửi thông báo lên server rằng ghế này đã được bỏ chọn
+            } else {
+                // Nếu ghế này chưa được chọn
+                seatElement.classList.add('selected'); // Đánh dấu ghế là đã chọn
+                selectedSeats.push({ row: rowIndex, col: colIndex ,
+                    price: seatPrice, // Thêm giá ghế
+                    type: seatType // Thêm loại ghế
+                    });
+                // Thêm ghế vào danh sách các ghế đã chọn
+                socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
+                // Gửi thông báo lên server rằng ghế này đã được chọn
+            }
+
+        }
+        ////kết thức hàm chọn select_seat
+
+        socket.on('seat_selected', ({ row, col, userId: selectedUserId }) => {
+            const userId = document.getElementById('userId').value;
+            const seat = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            if (seat && selectedUserId !== userId) {
+                seat.classList.add('pending'); // Nếu người dùng khác chọn ghế
+            }
+        });
+
+        socket.on('seat_reverted', ({ row, col }) => {
+            const seat = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            if (seat) seat.classList.remove('pending', 'selected');
+        });
+
+        socket.on('seat_booked', ({ row, col }) => {
+            const seat = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            if (seat) seat.classList.add('booked');
+        });
+
+        socket.on('error', ({ message }) => {
+            alert(message); // Hiển thị thông báo lỗi nếu ghế đã được chọn bởi người khác
+        });
+
+>>>>>>> features/danh-pay-all
         async function fetchSeatLayout(showtimeId) {
             try {
                 const response = await fetch(`http://localhost:3000/showtimes/${showtimeId}`);
                 const data = await response.json();
                 if (data.Room_Shape) {
+<<<<<<< HEAD
+=======
+                    // Lưu lại thông tin giá ghế từ server
+                    console.log("log dữ liệu:", data.seatTypes);
+                    data.seatTypes.forEach(seatType => {
+                        if (seatType.typeSeatName === "V") {
+                            seatTypePrices["V"] = seatType.typeSeatPrice;
+                        } else if (seatType.typeSeatName === "T") {
+                            seatTypePrices["T"] = seatType.typeSeatPrice;
+                        } else if (seatType.typeSeatName === "D") {
+                            seatTypePrices["D"] = seatType.typeSeatPrice;
+                        }
+                    });
+                    // Kiểm tra giá trị lưu trữ trong seatTypePrices
+                    console.log('seatTypePrices:', seatTypePrices);
+>>>>>>> features/danh-pay-all
                     renderSeatMap(data.Room_Shape);
                 } else {
                     console.error('Không tìm thấy layout ghế');
@@ -459,15 +680,20 @@ const socket = io('http://localhost:3006');
                 console.error('Lỗi khi lấy dữ liệu ghế:', error);
             }
         }
+<<<<<<< HEAD
 
         fetchSeatLayout('671b0b8e82d37a8f3ec5ffda');  // Sử dụng showtimeId thực tế
 
         // Khi người dùng nhấn nút "Thanh toán"
+=======
+/*
+>>>>>>> features/danh-pay-all
         document.getElementById('pay-button').addEventListener('click', async () => {
             if (selectedSeats.length === 0) {
                 alert('Vui lòng chọn ít nhất một ghế.');
                 return;
             }
+<<<<<<< HEAD
 
             // Gửi yêu cầu thanh toán ghế lên server
             socket.emit('pay_for_seats', { showtimeId: '671b0b8e82d37a8f3ec5ffda', seats: selectedSeats });
@@ -475,3 +701,105 @@ const socket = io('http://localhost:3006');
     </script>
     </body>
 </html>
+=======
+            const userId = document.getElementById('userId').value;
+
+            try {
+                // Gọi API PUT để cập nhật trạng thái ghế
+                const response = await fetch('http://localhost:3000/showtimes/bookSeats', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        showtimeId: showtimeId,
+                        seats: selectedSeats,
+                        userId: userId
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Cập nhật giao diện sau khi thanh toán thành công
+                    alert('Thanh toán thành công');
+                    // Reset danh sách ghế đã chọn
+                    selectedSeats = [];
+                    // Tải lại sơ đồ ghế để hiển thị trạng thái mới
+                    loadSeatMap();
+                } else {
+                    alert('Thanh toán thất bại. Vui lòng thử lại.');
+                }
+            } catch (error) {
+                console.error('Lỗi khi thanh toán ghế:', error);
+                alert('Có lỗi xảy ra khi thanh toán.');
+            }
+        });
+*/
+document.getElementById('pay-button').addEventListener('click', async () => {
+    if (selectedSeats.length === 0) {
+        alert('Vui lòng chọn ít nhất một ghế.');
+        return;
+    }
+    const userId = document.getElementById('userId').value;
+
+    try {
+        // Lấy thông tin ngày giờ hiện tại
+        const dateBooked = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại
+        const timeBooked = new Date().toLocaleTimeString(); // Lấy giờ hiện tại
+
+
+// Thêm console.log để kiểm tra dữ liệu trước khi gửi
+console.log('Sending data:', {
+            showtimeId: showtimeId,
+            seats: selectedSeats.map(seat => ({
+                row: seat.row,
+                col: seat.col,
+                price: seatTypePrices[seat.type], // Lấy giá từ seatTypePrices
+                typeSeatName: seat.type // Thêm loại ghế vào dữ liệu
+            })),
+            userId: userId,
+            dateBooked: dateBooked,
+            timeBooked: timeBooked
+        });
+
+        // Chuẩn bị dữ liệu gửi đến API
+        const response = await fetch('http://localhost:3000/showtimes/bookSeats', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                showtimeId: showtimeId,
+                seats: selectedSeats.map(seat => ({
+                    row: seat.row,
+                    col: seat.col,
+                    price: seatTypePrices[seat.type], // Lấy giá từ seatTypePrices dựa trên loại ghế
+                    typeSeatName: seat.type // Thêm loại ghế vào dữ liệu
+                })),
+                userId: userId,
+                dateBooked: dateBooked,
+                timeBooked: timeBooked
+            }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Thanh toán thành công');
+            selectedSeats = []; // Reset danh sách ghế đã chọn
+            loadSeatMap(); // Tải lại sơ đồ ghế để hiển thị trạng thái mới
+        } else {
+            alert('Thanh toán thất bại. Vui lòng thử lại.');
+        }
+    } catch (error) {
+        console.error('Lỗi khi thanh toán ghế:', error);
+        alert('Có lỗi xảy ra khi thanh toán.');
+    }
+});
+
+    </script>
+    </body>
+
+</html>
+>>>>>>> features/danh-pay-all

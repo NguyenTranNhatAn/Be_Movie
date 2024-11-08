@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đổi mật khẩu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        input {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Đổi mật khẩu</h1>
+    <form id="change-password-form">
+        <input type="password" id="old-password" placeholder="Mật khẩu cũ" required>
+        <input type="password" id="new-password" placeholder="Mật khẩu mới" required>
+        <button type="submit">Đổi mật khẩu</button>
+    </form>
+
+    <script>
+        document.getElementById('change-password-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const oldPassword = document.getElementById('old-password').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            // Lấy token từ localStorage
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Bạn cần đăng nhập trước khi đổi mật khẩu.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ oldPassword, newPassword })
+                });
+
+                const data = await response.json();
+                alert(data.message);
+
+                if (response.ok) {
+                    // Đổi mật khẩu thành công, bạn có thể điều hướng tới trang khác nếu cần
+                    window.location.href = 'trang_khac.html';  // Ví dụ điều hướng sang trang khác
+                }
+            } catch (error) {
+                console.error('Có lỗi xảy ra:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        });
+    </script>
+</body>
+</html>

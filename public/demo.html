@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seat Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .title {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .seat-map {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .row {
+      display: flex;
+      margin-bottom: 15px;
+    }
+
+    .row-label {
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .seat {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #000;
+      border-radius: 5px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+
+    .thuong {
+      border-color: green;
+    }
+
+    .vip {
+      border-color: red;
+    }
+
+    .doi {
+      border-color: pink;
+    }
+
+    .booked {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+
+    .unavailable {
+      background-color: lightgray;
+      cursor: not-allowed;
+    }
+
+    .selected {
+      background-color: red;
+      border-color: red;
+    }
+
+    .pay-button {
+      background-color: #f60;
+      padding: 12px;
+      text-align: center;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .legend {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .legend-box {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Đặt Ghế</div>
+    <div class="seat-map" id="seat-map"></div>
+
+    <div class="pay-button" onclick="handlePayment()">Thanh Toán và Đặt Ghế</div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-box thuong"></div>
+        <span>Thường</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box vip"></div>
+        <span>VIP</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box doi"></div>
+        <span>Ghế Đôi</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box booked"></div>
+        <span>Đã Đặt</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box unavailable"></div>
+        <span>Không Thể Chọn</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box selected"></div>
+        <span>Đang Chọn</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let seatLayout = [];
+    let selectedSeats = [];
+
+    async function fetchSeatLayout() {
+      try {
+        const response = await fetch('http://localhost:3000/showtimes/671b0b8e82d37a8f3ec5ffda');
+        const data = await response.json();
+        if (data.Room_Shape) {
+          seatLayout = data.Room_Shape.split('/');
+          renderSeats();
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu ghế:', error);
+      }
+    }
+
+    function renderSeats() {
+      const seatMap = document.getElementById('seat-map');
+      seatMap.innerHTML = '';
+
+      seatLayout.forEach((row, rowIndex) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+
+        const rowLabel = document.createElement('div');
+        rowLabel.className = 'row-label';
+        rowLabel.innerText = `Hàng ${String.fromCharCode(65 + rowIndex)}`;
+        rowDiv.appendChild(rowLabel);
+
+        row.split('').forEach((seatType, colIndex) => {
+          const seatDiv = document.createElement('div');
+          seatDiv.className = `seat ${getSeatClass(seatType)}`;
+          seatDiv.innerText = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`;
+
+          seatDiv.onclick = () => selectSeat(rowIndex, colIndex, seatType);
+
+          rowDiv.appendChild(seatDiv);
+        });
+
+        seatMap.appendChild(rowDiv);
+      });
+    }
+
+    function getSeatClass(seatType) {
+      switch (seatType) {
+        case 'T': return 'thuong';
+        case 'V': return 'vip';
+        case 'D': return 'doi';
+        case 'U': return 'booked';
+        case '_': return 'unavailable';
+        default: return '';
+      }
+    }
+
+    function selectSeat(rowIndex, colIndex, seatType) {
+      if (seatType === 'U' || seatType === 'P' || seatType === '_') {
+        alert('Ghế này đã được đặt hoặc không thể chọn.');
+        return;
+      }
+
+      const seatId = `${rowIndex}-${colIndex}`;
+      const seatDiv = document.querySelector(`.row:nth-child(${rowIndex + 2}) .seat:nth-child(${colIndex + 2})`);
+
+      if (selectedSeats.includes(seatId)) {
+        selectedSeats = selectedSeats.filter(seat => seat !== seatId);
+        seatDiv.classList.remove('selected');
+      } else {
+        selectedSeats.push(seatId);
+        seatDiv.classList.add('selected');
+      }
+
+      console.log('Selected Seats:', selectedSeats);
+    }
+
+    function handlePayment() {
+      if (selectedSeats.length === 0) {
+        alert('Vui lòng chọn ít nhất một ghế.');
+        return;
+      }
+
+      console.log('Đã gửi sự kiện thanh toán cho ghế:', selectedSeats);
+      alert('Đặt ghế thành công');
+    }
+
+    fetchSeatLayout();
+  </script>
+</body>
+</html>
