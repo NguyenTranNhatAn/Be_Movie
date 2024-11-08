@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+        let result = (console.log("A"),console.log("B"),10);
+        console.log(result);
+        let so=(1,2,3);
+        console.log(so);
+        const set = new Set([1, 2, 3, 4, 4]);
+console.log(set); // Kết quả: Set { 1, 2, 3, 4 }
+const str="hello";
+const arr=[1,2,4,5];
+const myStr = [...str]; // Sử dụng toán tử spread
+console.log(myStr); // Kết quả: ['h', 'e', 'l', 'l', 'o']
+
+const numbers = [1, 2, 3, 4, 5];
+
+function sum(a, b, c, d, e) {
+    return a + b + c + d + e;
+}
+
+const total = sum(...numbers); // Phân tán numbers vào hàm sum
+
+console.log(total); // Kết quả: 15
+const numbers123 = [5, 10, 15];
+const result123=numbers123.map((value,index,array)=>{
+
+    // if(index<array.length-1){
+    //     return value + array[index+1]
+    // }
+    console.log(`mảng độ dài Array:${array.length}`);
+    return value ;
+});
+console.log("result",result123);
+
+///////
+const data = [
+  {
+    item: {
+      Key: '12345',
+      Name: 'Example Item',
+    },
+  },
+  {
+    item: {
+      Key: '67890',
+      Name: 'Another Item',
+    },
+  },
+];
+
+// Truy cập `Key` của từng `item` trong mảng `data`
+data.forEach((item) => {
+  console.log(item.item.Key); // In ra '12345' cho mục đầu tiên và '67890' cho mục thứ hai
+});
+console.log(data.map(item=>item.item.Key));
+////////////////////// mảng 2 chiều
+let  Room_Shape = "TTT/VVV/DDD";
+//let roomShapeArray =  Room_Shape.split('/').map((row) => row.split(''));
+let roomShapeArray=Room_Shape.split('/').map((row)=>row.split(''));
+console.log(roomShapeArray);
+let Str="345/456";
+console.log(Str.split(''));
+const arrTr=Str.split('/').map(row=>row.split(''))
+console.log("mảng hai chiều:",arrTr);
+console.log("mảng thành chuỗi:",arrTr.map(row=>row.join('')).join('/'));
+const matrix = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+];
+const seat=[
+  ['T','P','T'],
+  ['V','V','V']
+];
+console.log("chi pu:",seat.map(row=>row.join('')).join('/'));
+console.log(matrix[0].length); 
+console.log("split:",matrix.map(row=>row.join(''))); // 6
+console.log(matrix[2][1]); // 8
+for(let i=0;i<matrix.length;i++){
+  for(let j=0;j<matrix[i].length;j++){
+    console.log(matrix[i][j])
+  }
+}
+/////
+matrix.forEach(row => {
+  console.log("rrrr",row)
+    row.forEach(element => {
+        console.log(element);
+    });
+});
+///
+const fruits = ['apple', 'banana', 'mango'];
+
+console.log(fruits.includes('banana')); // true
+console.log(fruits.includes('orange')); // false
+console.log([...fruits,'dưa leo']);
+
+    </script>
+  </body>
+</html>

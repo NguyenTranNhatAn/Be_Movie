@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Registration</title>
+    </head>
+    <body>
+        <h2>Register with OTP Verification</h2>
+        <form id="registerForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br><br>
+
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone" required><br><br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"
+                required><br><br>
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required><br><br>
+
+            <button type="submit">Register</button>
+             
+        </form>
+
+        <script>
+       
+    document.getElementById('registerForm').addEventListener('submit', async function (e) {
+        
+      e.preventDefault();
+
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        password: document.getElementById('password').value,
+        address: document.getElementById('address').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:3000/user/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        if (data.message === 'Registration successful, OTP sent!') {
+          localStorage.setItem('email', formData.email);
+        //   window.location.href = 'http://localhost:3000/otp.html';  // Redirect to OTP page
+        window.location.href='./otp.html'
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  </script>
+    </body>
+</html>

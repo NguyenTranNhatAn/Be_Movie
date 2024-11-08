@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Product Stock</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+        <div class="container">
+            <h2>Product Stock</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search product name">
+                <button><i class="fa fa-search"></i></button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Piece</th>
+                        <th>Available Color</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="apple-watch.jpg" alt="Apple Watch"></td>
+                        <td>Apple Watch Series 4</td>
+                        <td>Digital Product</td>
+                        <td>$690.00</td>
+                        <td>63</td>
+                        <td>
+                            <span class="color black"></span>
+                            <span class="color grey"></span>
+                            <span class="color pink"></span>
+                        </td>
+                        <td>
+                            <button class="edit"><i
+                                    class="fa fa-edit"></i></button>
+                            <button class="delete"><i
+                                    class="fa fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="microsoft-headsquare.jpg"
+                                alt="Microsoft Headsquare"></td>
+                        <td>Microsoft Headsquare</td>
+                        <td>Digital Product</td>
+                        <td>$190.00</td>
+                        <td>13</td>
+                        <td>
+                            <span class="color black"></span>
+                            <span class="color pink"></span>
+                            <span class="color blue"></span>
+                            <span class="color yellow"></span>
+                        </td>
+                        <td>
+                            <button class="edit"><i
+                                    class="fa fa-edit"></i></button>
+                            <button class="delete"><i
+                                    class="fa fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <!-- Add more rows as needed following the same pattern -->
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span>Showing 1-09 of 78</span>
+                <div class="pagination-buttons">
+                    <button><i class="fa fa-chevron-left"></i></button>
+                    <button><i class="fa fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
