@@ -12,4 +12,4 @@ const ShowtimeSchema= new Schema({
     
 });
 
-module.exports= mongoose.model('showtime', ShowtimeSchema);
+module.exports= mongoose.model('showtim', ShowtimeSchema);

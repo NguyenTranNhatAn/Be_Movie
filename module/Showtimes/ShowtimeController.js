@@ -1,5 +1,5 @@
 
-const ShowtimeModel = require("./ShowtimeModel");
+const ShowtimeModel = require("../../models/ShowTime");
 
 
 
