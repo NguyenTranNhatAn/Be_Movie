@@ -220,6 +220,10 @@ app.use('/cinema', cinema);
 app.use('/room', room);
 app.use('/movie', movie);
 app.use('/ticket', ticketRoutes);
+app.use('/review', review);
+app.use('/admin', admin);
+app.use('/brand', brand);
+app.use('/showtime', showtime);
 //danh làm:
 app.use('/room', roomRoutes);
 app.use('/showtimes', showTimeRoutes);;
