@@ -13,4 +13,4 @@ const ShowTimeSchema = new Schema({
 });
 
 // module.exports = mongoose.model('showtime', ShowTimeSchema);
-module.exports = mongoose.model('showtim', ShowTimeSchema);
+module.exports = mongoose.model('showtime', ShowTimeSchema);
