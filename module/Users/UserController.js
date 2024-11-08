@@ -98,4 +98,4 @@ const getAll = async () => {
     
 }
 
-module.exports = { login, register, update,updateUser ,getAll,getWishList}
+module.exports = { login, update,updateUser ,getAll,getWishList}
