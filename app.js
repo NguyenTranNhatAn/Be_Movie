@@ -229,10 +229,10 @@ app.use('/room', roomRoutes);
 app.use('/showtimes', showTimeRoutes);;
 app.use('/api', loginRoutes);
 app.use('/typeseat', typeSeatRoutes);
-app.use('/api', require('./routes/playtimeRoutes'));
+app.use('/api', playtimeRoutes);
 app.use('/order', zaloPayRoutes); // Prefix '/order' để quản lý các route liên quan đến đơn hàng
 app.use('/order', require('./routes/order-controller'));
-app.use('/combo', require('./routes/comboRoutes'));
+
 
 //danh làm:
 
