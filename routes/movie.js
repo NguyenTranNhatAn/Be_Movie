@@ -25,6 +25,16 @@ router.post('/add', async function(req, res, next) {
         res.status(414).json({status:"false" } );
     }
 })
+router.get('/getDelete', async function (req, res) {
+    try {
+        const movie = await MovieController.getDelete()
+        res.status(200).json(movie)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
 router.get('/getDetail', async function (req, res) {
     try {
         const {_id} =req.query
@@ -69,6 +79,19 @@ router.post('/delete', async function (req, res) {
         movie = await MovieController.remove(_id);
         
         res.status(200).json({ status: 'true' ,message:'Xóa Thành công'})
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: 'false',message:error.message });
+    }
+})
+router.post('/revert', async function (req, res) {
+    try {
+
+        const { _id } = req.body;
+        let movie;
+        movie = await MovieController.revert(_id);
+        
+        res.status(200).json({ status: 'true' ,message:'Khôi phục phim thành công'})
     } catch (error) {
         console.log(error);
         res.status(414).json({ status: 'false',message:error.message });

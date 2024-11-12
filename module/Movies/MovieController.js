@@ -12,6 +12,16 @@ const getAll = async () => {
     }
     
 }
+const getDelete = async () => {
+    try {
+        const movies = await MovieModel.find({});
+        const returnMovie = movies.filter(item => item.status == false);
+        return returnMovie;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
 const getDetail = async (_id) => {
     try {
         const movie = await MovieModel.findOne({ _id: _id });
@@ -41,6 +51,26 @@ const remove = async (_id) => {
 
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await MovieModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
+        
+        return movie;
+    } catch (error) {
+        console.error(error);
+        throw error; 
+    }
+};
+const revert = async (_id) => {
+    try {
+       
+        const movie = await MovieModel.findById(_id);
+        if (!movie) {
+            throw new Error('Phim không tồn tại');
+        }   
+        if(movie.status==true){
+            throw new Error('Phim này không có trong danh sách xóa');
+        }
+
+        // Cập nhật với strict: false để thêm thuộc tính không có trong schema
+        await MovieModel.updateOne({ _id }, { $set: { status: true } }, { strict: false });
         
         return movie;
     } catch (error) {
@@ -114,4 +144,4 @@ const addWishList =async(movieId,id)=>{
         console.log(error)
     }
 }
-module.exports ={add,getAll,getDetail,search,update,remove,addWishList,addWish}
+module.exports ={add,getAll,getDetail,search,update,remove,addWishList,addWish,getDelete,revert}
