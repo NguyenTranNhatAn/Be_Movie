@@ -45,6 +45,7 @@ router.post('/addShowTimes', async (req, res) => {
 
 
 // API hiển thị layout ghế của suất chiếu
+/*
 router.get('/:showtimeId', async (req, res) => {
     const { showtimeId } = req.params;
 
@@ -66,7 +67,10 @@ router.get('/:showtimeId', async (req, res) => {
                 path: 'movieId', // Lấy thông tin phim qua movieId
                 model: 'movie',
                 select: 'name' // Chỉ lấy trường name của phim
-            });
+            })
+
+
+            ;
 
         console.log('Seat Types Populated:', showtime.seatTypes); // Kiểm tra xem dữ liệu đã được populate hay chưa
 
@@ -87,6 +91,63 @@ router.get('/:showtimeId', async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching showtime data:', error); // Thêm log này
+        res.status(500).json({ message: 'Error fetching showtime data', error });
+    }
+});
+*/
+// API hiển thị layout ghế của suất chiếu
+router.get('/:showtimeId', async (req, res) => {
+    const { showtimeId } = req.params;
+
+    // Kiểm tra tính hợp lệ của ObjectId trước khi tìm kiếm
+    if (!mongoose.Types.ObjectId.isValid(showtimeId)) {
+        return res.status(400).json({ message: 'Invalid Showtime ID' });
+    }
+
+    try {
+        const showtime = await ShowTime.findById(showtimeId)
+            .populate({
+                path: 'seatTypes', // Đây là tên trường trong schema của ShowTime
+                model: 'typeSeat', // Đảm bảo rằng model 'TypeSeat' khớp với tên bạn đã đăng ký
+                select: 'typeSeatName typeSeatPrice' // Lấy các trường cần thiết
+            })
+            .populate({
+                path: 'movieId', // Lấy thông tin phim qua movieId
+                model: 'movie',
+                select: 'name' // Chỉ lấy trường name của phim
+            })
+            .populate({
+                path: 'roomId', // Populate roomId to get room details
+                model: 'room',
+                select: 'name cinemaId roomShape', // Lấy các trường cần thiết từ Room
+                populate: {
+                    path: 'cinemaId', // Populate cinemaId from Room to get Cinema details
+                    model: 'cinema',
+                    select: 'name address' // Lấy các trường cần thiết từ Cinema
+                }
+            });
+
+        if (!showtime) {
+            return res.status(404).json({ message: 'Showtime not found' });
+        }
+
+        // Trả về layout ghế (Room_Shape) cùng với thông tin cinemaId và cinemaName
+        res.json({
+            Room_Shape: showtime.Room_Shape,
+            showtimeId: showtime._id,
+            movieId: showtime.movieId._id,
+            movieName: showtime.movieId.name, // Tên phim
+            startTime: showtime.startTime,
+            endTime: showtime.endTime,
+            day: showtime.day,
+            seatTypes: showtime.seatTypes, // Thông tin về loại ghế
+            roomName: showtime.roomId.name, // Tên phòng
+            cinemaId: showtime.roomId.cinemaId._id, // ID của Cinema
+            cinemaName: showtime.roomId.cinemaId.name, // Tên Cinema
+            cinemaAddress: showtime.roomId.cinemaId.address // Địa chỉ của Cinema
+        });
+    } catch (error) {
+        console.error('Error fetching showtime data:', error); // Log lỗi
         res.status(500).json({ message: 'Error fetching showtime data', error });
     }
 });
