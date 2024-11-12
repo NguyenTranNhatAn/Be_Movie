@@ -37,9 +37,10 @@ const getMovieShowtime = async (movieId, day) => {
           console.log(check)
         return showtimes;
     } catch (error) {
+        //
         console.log(error);
     }
-
+ 
 }
 const getBrandByShowtime = async (movieId, day) => {
     try {
