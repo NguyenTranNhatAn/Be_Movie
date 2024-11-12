@@ -6,7 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Sơ đồ ghế</title>
         <script src="http://localhost:3006/socket.io/socket.io.js"></script>
-
         <style>
         body {
             font-family: Arial, sans-serif;
@@ -142,9 +141,8 @@
 
         <script>
         const socket = io('http://localhost:3006');
-    
         let selectedSeats = [];
-        let showtimeId = '6731b6574d9a252f21fc014f'; // ID suất chiếu mẫu
+        let showtimeId = '671f9fc341ad0fbcaddb1af3'; // ID suất chiếu mẫu
         let seatTypePrices = {}; // Lưu trữ giá ghế theo loại ghế
         function loadSeatMap() {
             if (!document.getElementById('userId').value) {
@@ -251,7 +249,7 @@
 
         async function fetchSeatLayout(showtimeId) {
             try {
-                const response = await fetch(`https://be-movie-sooty.vercel.app/showtimes/${showtimeId}`);
+                const response = await fetch(`http://localhost:3000/showtimes/${showtimeId}`);
                 const data = await response.json();
                 if (data.Room_Shape) {
                     // Lưu lại thông tin giá ghế từ server
@@ -343,7 +341,7 @@ console.log('Sending data:', {
         });
 
         // Chuẩn bị dữ liệu gửi đến API
-        const response = await fetch('https://be-movie-sooty.vercel.app/showtimes/bookSeats', {
+        const response = await fetch('http://localhost:3000/showtimes/bookSeats', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

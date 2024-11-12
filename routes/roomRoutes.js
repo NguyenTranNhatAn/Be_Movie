@@ -6,7 +6,7 @@ const router = express.Router();
 
 // API thêm phòng chiếu
 router.post('/addRooms', async (req, res) => {
-  const { name, totalSeat, roomShape, cinemaId, seatTypes } = req.body;
+  const { name, totalSeat, roomShape, cinema_id, seatTypes } = req.body;
 
   try {
     // Tạo phòng chiếu mới
@@ -14,7 +14,7 @@ router.post('/addRooms', async (req, res) => {
       name: name,
       totalSeat: totalSeat,
       roomShape: roomShape,
-      cinemaId: cinemaId,
+      cinema_id: cinema_id,
       seatTypes: seatTypes // Tham chiếu đến các loại ghế đã có
     });
 
