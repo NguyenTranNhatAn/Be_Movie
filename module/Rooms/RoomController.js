@@ -83,6 +83,7 @@ const add = async (name,totalSeat,roomShape,cinema_id) => {
 const listByCinema = async (cinemaId) => {
     try {
         const rooms = await RoomModel.find({cinemaId:cinemaId});
+        console.log(rooms)
         return rooms;
     } catch (error) {
         console.log(error);
