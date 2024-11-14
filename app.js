@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
             console.log(`Ghế (${row}, ${col}) đã được hoàn tác do không thanh toán trong 2 phút.`);
           }
         }
-      }, 20 * 1000); // 20 giây 
+      }, 2*60 * 1000); // 2 phút
     } else {
       socket.emit('error', { message: 'Ghế này không khả dụng' });
     }
@@ -232,7 +232,7 @@ app.use('/typeseat', typeSeatRoutes);
 app.use('/api', playtimeRoutes);
 app.use('/order', zaloPayRoutes); // Prefix '/order' để quản lý các route liên quan đến đơn hàng
 app.use('/order', require('./routes/order-controller'));
-
+app.use('/combo', require('./routes/comboRoutes'));
 
 //danh làm:
 

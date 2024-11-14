@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const ComboSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  price: { type: String, required: true },
+  price: { type: Number, required: true },
   description: { type: String, required: true },
   note: { type: String },
   image: { type: String },
