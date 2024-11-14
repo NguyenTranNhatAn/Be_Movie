@@ -225,7 +225,7 @@ app.use('/admin', admin);
 app.use('/brand', brand);
 app.use('/showtime', showtime);
 //danh làm:
-app.use('/room', roomRoutes);
+ app.use('/room', roomRoutes);
 app.use('/showtimes', showTimeRoutes);;
 app.use('/api', loginRoutes);
 app.use('/typeseat', typeSeatRoutes);

@@ -33,6 +33,16 @@ router.get('/getAll', async function (req, res) {
         res.status(414).json({ status: "false" });
     }
 })
+router.get('/getDelete', async function (req, res) {
+    try {
+        const cinema = await CinemaController.getDelete()
+        res.status(200).json(cinema)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: "false" });
+    }
+})
 router.post('/delete', async function (req, res) {
     try {
 
@@ -40,6 +50,18 @@ router.post('/delete', async function (req, res) {
         let cinema;
         cinema = await CinemaController.remove(_id);
         res.status(200).json({ status: 'true', message: 'Xóa Thành công' })
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: 'false', message: error.message });
+    }
+})
+router.post('/revert', async function (req, res) {
+    try {
+
+        const { _id } = req.body;
+        let cinema;
+        cinema = await CinemaController.revert(_id);
+        res.status(200).json({ status: 'true', message: 'Hoàn xóa Thành công' })
     } catch (error) {
         console.log(error);
         res.status(414).json({ status: 'false', message: error.message });

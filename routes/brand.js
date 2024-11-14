@@ -36,9 +36,31 @@ router.post('/delete', async function (req, res) {
         res.status(414).json({ status: 'false',message:error.message});
     }
 })
+router.post('/revert', async function (req, res) {
+    try {
+
+        const { _id } = req.body;
+        let brand;
+        brand = await BrandController.revert(_id);
+        res.status(200).json({ status: 'true' ,message:'Hoàn Xóa Thành công'})
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: 'false',message:error.message});
+    }
+})
 router.get('/getAll', async function (req, res) {
     try {
         const brand = await BrandController.getAll()
+        res.status(200).json(brand)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: "false" });
+    }
+})
+router.get('/getDelete', async function (req, res) {
+    try {
+        const brand = await BrandController.getDelete()
         res.status(200).json(brand)
 
     } catch (error) {

@@ -10,6 +10,16 @@ const getAll = async () => {
     }
     
 }
+const getDelete = async () => {
+    try {
+        const movies = await GenreModel.find({});
+        const returnMovies= movies.filter(item=>item.status==false)
+        return returnMovies;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
 const getDetail = async (_id) => {
     try {
         if (!_id){
@@ -59,9 +69,29 @@ const remove = async (_id) => {
         throw error; 
     }
 };
+const revert = async (_id) => {
+    try {
+       
+        const genre = await GenreModel.findById(_id);
+        if (!genre) {
+            throw new Error('Thể loại không tồn tại');
+        }
+        if(genre.status==true){
+            throw new Error('Thể loại không có trong danh sách xóa');
+        }
+
+        // Cập nhật với strict: false để thêm thuộc tính không có trong schema
+        await GenreModel.updateOne({ _id }, { $set: { status: true } }, { strict: false });
+        
+        return genre;
+    } catch (error) {
+        console.error(error);
+        throw error; 
+    }
+};
 const add = async (name,description) => {
     const genre= new GenreModel({name,description});
     await genre.save()
     return genre;
 }
-module.exports ={add,getAll,getDetail,remove,update}
+module.exports ={add,getAll,getDetail,remove,update,getDelete,revert}
