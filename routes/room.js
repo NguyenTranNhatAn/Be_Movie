@@ -73,6 +73,7 @@ router.post('/revert', async function (req, res) {
     try {
   
         const {_id,name,roomShape,cinemaId,totalSeat} = req.body;
+        
         const room= await RoomController.update(_id,name,roomShape,cinemaId,totalSeat)
        
         res.status(200).json({ status: 'true', room:room })
