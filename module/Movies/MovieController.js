@@ -1,5 +1,6 @@
 const UserModel = require("../Users/UserModel");
 const MovieModel = require("./MovieModel");
+const Ticket = require("../../models/Ticket");
 
 
 const getAll = async () => {
@@ -48,6 +49,10 @@ const remove = async (_id) => {
         if(movie.status==false){
             throw new Error('Phim này đã được xóa');
         }
+        const movies= await Ticket.find({movieId:_id})
+        if(movies){
+            throw new Error('Phim không được xóa do được liên kết với ticket');
+        }
 
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await MovieModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
@@ -85,7 +90,7 @@ const add = async (name,duration,release_date,trailer,images,description,rating,
 }
 const search = async (name) => {
     try {      
-        const movie = await MovieModel.find({ name:{  $regex: `${name}`,$options :'i'} });
+        const movie = await MovieModel.find({ name:{  $regex: `${name}`,$options :'i'},status: { $ne: false }  });
         return movie;
     } catch (error) {
         console.log(error);

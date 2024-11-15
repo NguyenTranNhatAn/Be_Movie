@@ -12,11 +12,12 @@ const getAll = async () => {
 
 }
 
-const add = async (movieId, roomId, startTime, endTime, day, Room_Shape,) => {
-    const showtime = new ShowtimeModel({ movieId, roomId, startTime, endTime, day, Room_Shape });
+const add = async (movieId, roomId, startTime, endTime, day, Room_Shape,seatTypes) => {
+    const showtime = new ShowtimeModel({ movieId, roomId, startTime, endTime, day, Room_Shape,seatTypes });
     await showtime.save()
     return showtime;
 }
+
 const getMovieShowtime = async (movieId, day) => {
     try {
         const check = await ShowtimeModel.find({ movieId: movieId });
@@ -38,6 +39,22 @@ const getMovieShowtime = async (movieId, day) => {
         return showtimes;
     } catch (error) {
         //
+        console.log(error);
+    }
+ 
+}
+
+const getByMovie = async (movieId) => {
+    try {
+        const check = await ShowtimeModel.find({ movieId: movieId });
+        if (!check) {
+            throw new Error('Xuất chiếu không tìm thấy!');
+        }
+      
+        const showtimes = await ShowtimeModel.find({ movieId: movieId});
+          console.log(check)
+        return showtimes;
+    } catch (error) {
         console.log(error);
     }
  
@@ -226,4 +243,4 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
 
 
 
-module.exports = { add ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll}
+module.exports = { add ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie}
