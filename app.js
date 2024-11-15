@@ -50,91 +50,31 @@ const io = socketIo(server, {
     methods: ["GET", "POST"]
   }
 });
-/*
+
 const ShowTime = require('./models/ShowTime');  // 
 
 const seatTimers = {}; // Bộ đếm thời gian cho mỗi ghế
 let originalSeatState = {}; // Trạng thái ban đầu của ghế
 
-// Xử lý kết nối Socket.IO
-io.on('connection', (socket) => {
-  console.log('Người dùng kết nối:', socket.id);
+// Hàm gửi sơ đồ ghế chi tiết
+async function emitSeatMapUpdate(io, showtimeId) {
+  const showtime = await ShowTime.findById(showtimeId);
+  if (!showtime) return;
 
-  // Khi người dùng chọn ghế
-  socket.on('select_seat', async ({ showtimeId, row, col, userId }) => {
-    console.log('User attempting to select seat:', { row, col, userId });
-    const showtime = await ShowTime.findById(showtimeId);
-    if (!showtime) {
-      return socket.emit('error', { message: 'Không tìm thấy suất chiếu' });
-    }
+  const roomShapeArray = showtime.Room_Shape.split('/').map((row) => row.split(''));
+  const detailedSeatMap = roomShapeArray.map((row, rowIndex) =>
+    row.map((seat, colIndex) => {
+      const seatId = `${rowIndex}-${colIndex}`;
+      const seatState = originalSeatState[seatId];
+      return {
+        status: seat, // Trạng thái ghế (T, V, D, P)
+        userId: seatState ? seatState.userId : null // ID người dùng nếu ghế đang được giữ
+      };
+    })
+  );
 
-    let roomShapeArray = showtime.Room_Shape.split('/').map((row) => row.split(''));
-
-    if (roomShapeArray[row][col] === 'P' && originalSeatState[`${row}-${col}`]?.userId !== userId) {
-      return socket.emit('error', { message: 'Ghế đang được chọn bởi người dùng khác' });
-    }
-
-    if (['T', 'V', 'D'].includes(roomShapeArray[row][col])) {
-      originalSeatState[`${row}-${col}`] = { state: roomShapeArray[row][col], userId };
-      roomShapeArray[row][col] = 'P'; // Đặt ghế thành đang chọn
-      showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
-      await showtime.save();
-      io.emit('seat_map_updated');  // Phát sự kiện để cập nhật sơ đồ ghế
-
-      // Thêm bộ đếm thời gian 2 phút để hoàn tác trạng thái nếu không thanh toán
-      const seatId = `${showtimeId}-${row}-${col}`;
-      if (seatTimers[seatId]) {
-        clearTimeout(seatTimers[seatId]); // Xóa bộ đếm cũ nếu có
-      }
-      seatTimers[seatId] = setTimeout(async () => {
-        const updatedShowtime = await ShowTime.findById(showtimeId);
-        if (updatedShowtime) {
-          let updatedRoomShapeArray = updatedShowtime.Room_Shape.split('/').map((r) => r.split(''));
-          if (updatedRoomShapeArray[row][col] === 'P') {
-            updatedRoomShapeArray[row][col] = originalSeatState[`${row}-${col}`]?.state || 'T'; // Khôi phục trạng thái ban đầu
-            delete originalSeatState[`${row}-${col}`];
-            updatedShowtime.Room_Shape = updatedRoomShapeArray.map((r) => r.join('')).join('/');
-            await updatedShowtime.save();
-            io.emit('seat_map_updated'); // Phát sự kiện cập nhật sơ đồ ghế
-            console.log(`Ghế (${row}, ${col}) đã được hoàn tác do không thanh toán trong 2 phút.`);
-          }
-        }
-      }, 2 * 60 * 1000); // 2 phút
-    } else {
-      socket.emit('error', { message: 'Ghế này không khả dụng' });
-    }
-  });
-
-  // Khi người dùng bỏ chọn ghế
-  socket.on('deselect_seat', async ({ showtimeId, row, col, userId }) => {
-    console.log('User attempting to deselect seat:', { row, col, userId });
-    const showtime = await ShowTime.findById(showtimeId);
-    if (!showtime) {
-      return socket.emit('error', { message: 'Không tìm thấy suất chiếu' });
-    }
-
-    let roomShapeArray = showtime.Room_Shape.split('/').map((row) => row.split(''));
-
-    const original = originalSeatState[`${row}-${col}`];
-    if (roomShapeArray[row][col] === 'P' && original && original.userId === userId) {
-      roomShapeArray[row][col] = original.state;
-      delete originalSeatState[`${row}-${col}`];
-      showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
-      await showtime.save();
-      io.emit('seat_map_updated');  // Phát sự kiện để cập nhật sơ đồ ghế
-    } else {
-      socket.emit('error', { message: 'Ghế này không thuộc quyền của bạn để bỏ chọn' });
-    }
-  });
-  socket.on('disconnect', () => {
-    console.log('Người dùng ngắt kết nối:', socket.id);
-  });
-});
-*/
-const ShowTime = require('./models/ShowTime');  // 
-
-const seatTimers = {}; // Bộ đếm thời gian cho mỗi ghế
-let originalSeatState = {}; // Trạng thái ban đầu của ghế
+  io.emit('seat_map_updated', { showtimeId, seatMap: detailedSeatMap });
+}
 
 // Xử lý kết nối Socket.IO
 io.on('connection', (socket) => {
@@ -156,6 +96,11 @@ io.on('connection', (socket) => {
     }
 
     if (roomShapeArray[row][col] === 'P' && originalSeatState[`${row}-${col}`]?.userId !== userId) {
+      console.log('gheesddang bị ngoi dung khac chon', {
+        currentSeatUser: originalSeatState[`${row}-${col}`]?.userId,
+        attemptingUser: userId,
+        seatPosition: { row, col },
+      })
       return socket.emit('error', { message: 'Ghế đang được chọn bởi người dùng khác' });
     }
 
@@ -164,7 +109,7 @@ io.on('connection', (socket) => {
       roomShapeArray[row][col] = 'P'; // Đặt ghế thành đang chọn
       showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
       await showtime.save();
-      io.emit('seat_map_updated');  // Phát sự kiện để cập nhật sơ đồ ghế
+      emitSeatMapUpdate(io, showtimeId);  // Phát sự kiện để cập nhật sơ đồ ghế
 
       // Thêm bộ đếm thời gian 2 phút để hoàn tác trạng thái nếu không thanh toán
       const seatId = `${showtimeId}-${row}-${col}`;
@@ -180,7 +125,7 @@ io.on('connection', (socket) => {
             delete originalSeatState[`${row}-${col}`];
             updatedShowtime.Room_Shape = updatedRoomShapeArray.map((r) => r.join('')).join('/');
             await updatedShowtime.save();
-            io.emit('seat_map_updated'); // Phát sự kiện cập nhật sơ đồ ghế
+            emitSeatMapUpdate(io, showtimeId); // Phát sự kiện cập nhật sơ đồ ghế
             console.log(`Ghế (${row}, ${col}) đã được hoàn tác do không thanh toán trong 2 phút.`);
           }
           delete seatTimers[seatId]; // Xóa bộ đếm sau khi hoàn tác
@@ -215,7 +160,7 @@ io.on('connection', (socket) => {
         delete seatTimers[seatId];
       }
 
-      io.emit('seat_map_updated');  // Phát sự kiện để cập nhật sơ đồ ghế
+      emitSeatMapUpdate(io, showtimeId);  // Phát sự kiện để cập nhật sơ đồ ghế
     } else {
       socket.emit('error', { message: 'Ghế này không thuộc quyền của bạn để bỏ chọn' });
     }
@@ -225,7 +170,6 @@ io.on('connection', (socket) => {
     console.log('Người dùng ngắt kết nối:', socket.id);
   });
 });
-
 
 
 
