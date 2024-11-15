@@ -9,7 +9,7 @@ const ShowtimeSchema= new Schema({
     endTime: { type: Date, required: true },
     day: { type: Date, required: true },
     Room_Shape: { type: String, required: true } ,
-    // seatTypes: [{ type: ObjectId, ref: 'typeSeat' }],
+    seatTypes: [{ type: ObjectId, ref: 'typeSeat' }],
     
 });
 
