@@ -4,8 +4,8 @@ var ShowtimeController = require('../module/Showtimes/ShowtimeController')
 
 router.post('/add', async function(req, res, next) {
     try {
-        const {movieId, roomId, startTime, endTime, day, Room_Shape,}=req.body;
-        const showtime = await ShowtimeController.add(movieId, roomId, startTime, endTime, day, Room_Shape,);
+        const {movieId, roomId, startTime, endTime, day, Room_Shape,seatTypes}=req.body;
+        const showtime = await ShowtimeController.add(movieId, roomId, startTime, endTime, day, Room_Shape,seatTypes);
         res.status(200).json(showtime)
     } catch (error) {
         res.status(414).json({status:"false" ,error:error} );
@@ -26,6 +26,28 @@ router.get('/getMovieShowtime', async function (req, res) {
     try {
         const { movieId,day } = req.query;
         const showtimes = await ShowtimeController.getMovieShowtime(movieId,day);
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
+router.get('/getByTime', async function (req, res) {
+    try {
+        const { movieId } = req.query;
+        const showtimes = await ShowtimeController.getByMovie(movieId);
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
+router.get('/getByMovie', async function (req, res) {
+    try {
+        const { movieId } = req.query;
+        const showtimes = await ShowtimeController.getByMovie(movieId);
         res.status(200).json(showtimes)
 
     } catch (error) {

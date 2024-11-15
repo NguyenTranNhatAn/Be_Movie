@@ -57,29 +57,11 @@ router.get('/:showtimeId', async (req, res) => {
     try {
         //const showtime = await ShowTime.findById(showtimeId).populate('seatTypes');
         // Sử dụng populate để lấy thông tin về TypeSeat
-<<<<<<< HEAD
-        const showtime = await ShowTime.findById(showtimeId)
-            .populate({
-                path: 'seatTypes', // Đây là tên trường trong schema của ShowTime
-                model: 'typeSeat', // Đảm bảo rằng model 'TypeSeat' khớp với tên bạn đã đăng ký
-                select: 'typeSeatName typeSeatPrice' // Lấy các trường cần thiết
-            })
-            .populate({
-                path: 'movieId', // Lấy thông tin phim qua movieId
-                model: 'movie',
-                select: 'name' // Chỉ lấy trường name của phim
-            })
-
-
-            ;
-
-=======
         const showtime = await ShowTime.findById(showtimeId).populate({
             path: 'seatTypes', // Đây là tên trường trong schema của ShowTime
             model: 'typeSeat', // Đảm bảo rằng model 'TypeSeat' khớp với tên bạn đã đăng ký
             select: 'typeSeatName typeSeatPrice' // Lấy các trường cần thiết
         });
->>>>>>> 492a1277d537d678d2a31fe02324bbea55b5d4e4
         console.log('Seat Types Populated:', showtime.seatTypes); // Kiểm tra xem dữ liệu đã được populate hay chưa
 
         if (!showtime) {
