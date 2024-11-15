@@ -142,7 +142,7 @@
         <script>
         const socket = io('http://localhost:3006');
         let selectedSeats = [];
-        let showtimeId = '6731b6574d9a252f21fc014f'; // ID suất chiếu mẫu
+        let showtimeId = '6735af1ca434ecfa7eb0449e'; // ID suất chiếu mẫu
         let seatTypePrices = {}; // Lưu trữ giá ghế theo loại ghế
         function loadSeatMap() {
             if (!document.getElementById('userId').value) {
@@ -213,10 +213,11 @@
             } else {
                 // Nếu ghế này chưa được chọn
                 seatElement.classList.add('selected'); // Đánh dấu ghế là đã chọn
-                selectedSeats.push({ row: rowIndex, col: colIndex ,
+                selectedSeats.push({
+                    row: rowIndex, col: colIndex,
                     price: seatPrice, // Thêm giá ghế
                     type: seatType // Thêm loại ghế
-                    });
+                });
                 // Thêm ghế vào danh sách các ghế đã chọn
                 socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
                 // Gửi thông báo lên server rằng ghế này đã được chọn
@@ -249,7 +250,16 @@
 
         async function fetchSeatLayout(showtimeId) {
             try {
-                const response = await fetch(`http://localhost:3000/showtimes/${showtimeId}`);
+                const response = await fetch('https://be-movie-sooty.vercel.app/showtimes/6735af1ca434ecfa7eb0449e', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        cinemaId: "67210027392f9057e72b4be0"
+                    }),
+                });
+
                 const data = await response.json();
                 if (data.Room_Shape) {
                     // Lưu lại thông tin giá ghế từ server
@@ -273,7 +283,46 @@
                 console.error('Lỗi khi lấy dữ liệu ghế:', error);
             }
         }
-/*
+        /*
+                document.getElementById('pay-button').addEventListener('click', async () => {
+                    if (selectedSeats.length === 0) {
+                        alert('Vui lòng chọn ít nhất một ghế.');
+                        return;
+                    }
+                    const userId = document.getElementById('userId').value;
+        
+                    try {
+                        // Gọi API PUT để cập nhật trạng thái ghế
+                        const response = await fetch('http://localhost:3000/showtimes/bookSeats', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                showtimeId: showtimeId,
+                                seats: selectedSeats,
+                                userId: userId
+                            }),
+                        });
+        
+                        const result = await response.json();
+        
+                        if (result.success) {
+                            // Cập nhật giao diện sau khi thanh toán thành công
+                            alert('Thanh toán thành công');
+                            // Reset danh sách ghế đã chọn
+                            selectedSeats = [];
+                            // Tải lại sơ đồ ghế để hiển thị trạng thái mới
+                            loadSeatMap();
+                        } else {
+                            alert('Thanh toán thất bại. Vui lòng thử lại.');
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi thanh toán ghế:', error);
+                        alert('Có lỗi xảy ra khi thanh toán.');
+                    }
+                });
+        */
         document.getElementById('pay-button').addEventListener('click', async () => {
             if (selectedSeats.length === 0) {
                 alert('Vui lòng chọn ít nhất một ghế.');
@@ -282,28 +331,51 @@
             const userId = document.getElementById('userId').value;
 
             try {
-                // Gọi API PUT để cập nhật trạng thái ghế
-                const response = await fetch('http://localhost:3000/showtimes/bookSeats', {
+                // Lấy thông tin ngày giờ hiện tại
+                const dateBooked = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại
+                const timeBooked = new Date().toLocaleTimeString(); // Lấy giờ hiện tại
+
+
+                // Thêm console.log để kiểm tra dữ liệu trước khi gửi
+                console.log('Sending data:', {
+                    showtimeId: showtimeId,
+                    seats: selectedSeats.map(seat => ({
+                        row: seat.row,
+                        col: seat.col,
+                        price: seatTypePrices[seat.type], // Lấy giá từ seatTypePrices
+                        typeSeatName: seat.type // Thêm loại ghế vào dữ liệu
+                    })),
+                    userId: userId,
+                    dateBooked: dateBooked,
+                    timeBooked: timeBooked
+                });
+
+                // Chuẩn bị dữ liệu gửi đến API
+                const response = await fetch('http://localhost:3006/showtimes/bookSeats', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         showtimeId: showtimeId,
-                        seats: selectedSeats,
-                        userId: userId
+                        seats: selectedSeats.map(seat => ({
+                            row: seat.row,
+                            col: seat.col,
+                            price: seatTypePrices[seat.type], // Lấy giá từ seatTypePrices dựa trên loại ghế
+                            typeSeatName: seat.type // Thêm loại ghế vào dữ liệu
+                        })),
+                        userId: userId,
+                        dateBooked: dateBooked,
+                        timeBooked: timeBooked
                     }),
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
-                    // Cập nhật giao diện sau khi thanh toán thành công
                     alert('Thanh toán thành công');
-                    // Reset danh sách ghế đã chọn
-                    selectedSeats = [];
-                    // Tải lại sơ đồ ghế để hiển thị trạng thái mới
-                    loadSeatMap();
+                    selectedSeats = []; // Reset danh sách ghế đã chọn
+                    loadSeatMap(); // Tải lại sơ đồ ghế để hiển thị trạng thái mới
                 } else {
                     alert('Thanh toán thất bại. Vui lòng thử lại.');
                 }
@@ -312,68 +384,6 @@
                 alert('Có lỗi xảy ra khi thanh toán.');
             }
         });
-*/
-document.getElementById('pay-button').addEventListener('click', async () => {
-    if (selectedSeats.length === 0) {
-        alert('Vui lòng chọn ít nhất một ghế.');
-        return;
-    }
-    const userId = document.getElementById('userId').value;
-
-    try {
-        // Lấy thông tin ngày giờ hiện tại
-        const dateBooked = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại
-        const timeBooked = new Date().toLocaleTimeString(); // Lấy giờ hiện tại
-
-
-// Thêm console.log để kiểm tra dữ liệu trước khi gửi
-console.log('Sending data:', {
-            showtimeId: showtimeId,
-            seats: selectedSeats.map(seat => ({
-                row: seat.row,
-                col: seat.col,
-                price: seatTypePrices[seat.type], // Lấy giá từ seatTypePrices
-                typeSeatName: seat.type // Thêm loại ghế vào dữ liệu
-            })),
-            userId: userId,
-            dateBooked: dateBooked,
-            timeBooked: timeBooked
-        });
-
-        // Chuẩn bị dữ liệu gửi đến API
-        const response = await fetch('http://localhost:3000/showtimes/bookSeats', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                showtimeId: showtimeId,
-                seats: selectedSeats.map(seat => ({
-                    row: seat.row,
-                    col: seat.col,
-                    price: seatTypePrices[seat.type], // Lấy giá từ seatTypePrices dựa trên loại ghế
-                    typeSeatName: seat.type // Thêm loại ghế vào dữ liệu
-                })),
-                userId: userId,
-                dateBooked: dateBooked,
-                timeBooked: timeBooked
-            }),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert('Thanh toán thành công');
-            selectedSeats = []; // Reset danh sách ghế đã chọn
-            loadSeatMap(); // Tải lại sơ đồ ghế để hiển thị trạng thái mới
-        } else {
-            alert('Thanh toán thất bại. Vui lòng thử lại.');
-        }
-    } catch (error) {
-        console.error('Lỗi khi thanh toán ghế:', error);
-        alert('Có lỗi xảy ra khi thanh toán.');
-    }
-});
 
     </script>
     </body>
