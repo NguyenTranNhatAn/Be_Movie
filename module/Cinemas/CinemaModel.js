@@ -5,7 +5,8 @@ const ObjectId = Schema.ObjectId;
 const CinemaSchema= new Schema({
     name:{type: String, require: true},
     address:{type:String, require:true},
-    brandId: {type:ObjectId,ref:'brand'}
+    brandId: {type:ObjectId,ref:'brand'},
+    status:Boolean
     
 });
 

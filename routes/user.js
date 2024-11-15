@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var UserController = require('../module/Users/UserController');
+const jwt = require('jsonwebtoken');
 var UserModel = require('../module/Users/UserModel');
 var nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
@@ -160,6 +161,26 @@ router.post('/updateUser', async function (req, res) {
     console.log(error);
     // Trả về lỗi nếu có vấn đề xảy ra trong quá trình cập nhật
     return res.status(500).json({ status: false, error: error.message });
+  }
+});
+router.get('/getWishList', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+      return res.status(401).json({ message: 'Token không hợp lệ.' });
+  }
+
+  try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await UserModel.findById(decoded.id).select('-password'); // Không trả mật khẩu
+      if (!user) {
+          return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+      }
+      const wishlist = await UserController.getWishList(decoded.id)
+      console.log(wishlist)
+      res.status(200).json(wishlist.wishlist)
+
+  } catch (error) {
+      res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
   }
 });
 module.exports = router;

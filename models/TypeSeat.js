@@ -7,7 +7,8 @@ const TypeSeatSchema = new mongoose.Schema({
         enum: ['V', 'T', 'D'] // V: Vip, T: thường, D: đôi
     },
     cinemaId: { type: mongoose.Schema.Types.ObjectId, ref: 'cinema', required: true }, // Liên kết đến Cinema
-    typeSeatPrice: { type: Number, required: true }
+    typeSeatPrice: { type: Number, required: true },
+    status: { type: Boolean, default: true }
 });
 
 module.exports = mongoose.model('typeSeat', TypeSeatSchema);

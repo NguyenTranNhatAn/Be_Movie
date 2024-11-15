@@ -1,7 +1,6 @@
 
-const ShowtimeModel = require("./ShowtimeModel");
-
-
+//const ShowtimeModel = require("./ShowtimeModel");
+const ShowtimeModel = require("../../models/ShowTime");
 
 const getAll = async () => {
     try {
@@ -35,11 +34,13 @@ const getMovieShowtime = async (movieId, day) => {
               $lte: endDate,
             },
           });
+          console.log(check)
         return showtimes;
     } catch (error) {
+        //
         console.log(error);
     }
-
+ 
 }
 const getBrandByShowtime = async (movieId, day) => {
     try {
@@ -225,4 +226,4 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
 
 
 
-module.exports = { add ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay}
+module.exports = { add ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll}
