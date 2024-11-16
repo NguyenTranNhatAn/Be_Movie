@@ -8,7 +8,7 @@ const UserSchema = new Schema({
     password: { type: String, require: true },
     address: { type: String, require: true },
     wishlist:[{type:ObjectId,ref:'movie'}],
-    
+    image: { type: String }, // Thêm trường ảnh
 
     otp: { type: String },          // OTP tạm thời
     isVerified: { type: Boolean, default: false }, // Trạng thái xác thực

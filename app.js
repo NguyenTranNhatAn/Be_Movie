@@ -9,6 +9,7 @@ const dotenv = require('dotenv');
 const http = require('http'); // Thêm HTTP để kết hợp với Socket.IO
 const socketIo = require('socket.io'); // Thêm Socket.IO
 
+
 dotenv.config(); // Load các biến môi trường từ .env
 
 var usersRouter = require('./routes/user');
@@ -40,9 +41,11 @@ const typeSeatRoutes = require('./routes/typeSeatRoutes');
 const playtimeRoutes = require('./routes/playtimeRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const zaloPayRoutes = require('./routes/zaloPayRoutes');
+const upImageRouter = require('./routes/upimage');
 //danh làm:
 
 const app = express();
+app.use('/uploads', express.static('uploads'));
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -224,6 +227,8 @@ app.use('/review', review);
 app.use('/admin', admin);
 app.use('/brand', brand);
 app.use('/showtime', showtime);
+app.use('/api', upImageRouter);
+
 //danh làm:
  app.use('/room', roomRoutes);
 app.use('/showtimes', showTimeRoutes);;
