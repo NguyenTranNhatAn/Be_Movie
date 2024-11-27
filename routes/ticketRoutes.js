@@ -61,13 +61,16 @@ router.get("/all/:userId", async (req, res) => {
 });
 // API để lấy tất cả các vé sắp chiếu (upcoming) của một người dùng
 router.get("/upcoming/:userId", async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store'); // Không lưu bộ nhớ cache
+    res.setHeader('Pragma', 'no-cache');
     const { userId } = req.params;
 
     try {
         const today = new Date();
 
-        // Tìm các vé có ngày chiếu trong tương lai
-        const tickets = await Ticket.find({ userId, showDate: { $gt: today } })
+        // Lấy vé có ngày chiếu trong tương lai, sắp xếp theo ngày tạo mới nhất
+        const tickets = await Ticket.find({ userId, showDate: { $gt: today }, status: "paid" })
+            .sort({ createdAt: -1 }) // Sắp xếp theo createdAt giảm dần
             .populate({
                 path: 'movieId',
                 select: 'name images', // Lấy tên và hình ảnh phim
@@ -96,7 +99,8 @@ router.get("/upcoming/:userId", async (req, res) => {
         res.json({
             error: 0,
             message: "Lấy tất cả vé sắp chiếu thành công.",
-            data: formattedTickets
+            data: formattedTickets,
+            newestTicket: formattedTickets.length > 0 ? formattedTickets[0] : null // Vé mới nhất
         });
     } catch (error) {
         console.log("Lỗi khi lấy vé sắp chiếu:", error);
@@ -107,15 +111,19 @@ router.get("/upcoming/:userId", async (req, res) => {
         });
     }
 });
+
 // API để lấy tất cả các vé đã chiếu (past) của một người dùng
 router.get("/past/:userId", async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store'); // Không lưu bộ nhớ cache
+    res.setHeader('Pragma', 'no-cache');
     const { userId } = req.params;
 
     try {
         const today = new Date();
 
-        // Tìm các vé có ngày chiếu trong quá khứ
-        const tickets = await Ticket.find({ userId, showDate: { $lt: today } })
+        // Lấy vé đã chiếu, sắp xếp theo ngày tạo mới nhất
+        const tickets = await Ticket.find({ userId, showDate: { $lt: today }, status: "paid" })
+            .sort({ createdAt: -1 }) // Sắp xếp theo createdAt giảm dần
             .populate({
                 path: 'movieId',
                 select: 'name images', // Lấy tên và hình ảnh phim
@@ -139,7 +147,8 @@ router.get("/past/:userId", async (req, res) => {
         res.json({
             error: 0,
             message: "Lấy tất cả vé đã chiếu thành công.",
-            data: formattedTickets
+            data: formattedTickets,
+            newestTicket: formattedTickets.length > 0 ? formattedTickets[0] : null // Vé mới nhất đã chiếu
         });
     } catch (error) {
         console.log("Lỗi khi lấy vé đã chiếu:", error);
@@ -147,6 +156,83 @@ router.get("/past/:userId", async (req, res) => {
             error: -1,
             message: "Không thể lấy vé đã chiếu.",
             data: null
+        });
+    }
+});
+
+// API để lấy tất cả các vé bị hủy (canceled) của một người dùng
+router.get("/cancelled/:userId", async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store'); // Không lưu bộ nhớ cache
+    res.setHeader('Pragma', 'no-cache');
+    const { userId } = req.params;
+
+    try {
+        // Lấy tất cả vé với trạng thái "canceled"
+        const tickets = await Ticket.find({ userId, status: "canceled" })
+            .sort({ createdAt: -1 }) // Sắp xếp theo createdAt giảm dần
+            .populate({
+                path: 'movieId',
+                select: 'name images', // Lấy tên và hình ảnh phim
+            });
+
+        const formattedTickets = tickets.map(ticket => ({
+            ticketId: ticket._id,
+            movieName: ticket.movieId ? ticket.movieId.name : "Unknown Movie",
+            movieImage: ticket.movieId && ticket.movieId.images && ticket.movieId.images.length > 0
+                ? ticket.movieId.images[0]
+                : null,
+            showDate: ticket.showDate,
+            status: "Đã hủy", // Gắn cứng trạng thái là "Đã hủy"
+            createdAt: ticket.createdAt,
+            cinemaName: ticket.cinemaName,
+            roomName: ticket.roomName,
+            seatDetails: ticket.seatDetails,
+            totalPrice: ticket.totalPrice
+        }));
+
+        res.json({
+            error: 0,
+            message: "Lấy tất cả vé đã hủy thành công.",
+            data: formattedTickets
+        });
+    } catch (error) {
+        console.log("Lỗi khi lấy vé đã hủy:", error);
+        res.status(500).json({
+            error: -1,
+            message: "Không thể lấy vé đã hủy.",
+            data: null
+        });
+    }
+});
+//API để hủy vé
+router.put("/cancel-ticket/:ticketId", async (req, res) => {
+    const { ticketId } = req.params;
+
+    try {
+        // Tìm vé theo ticketId và cập nhật trạng thái thành "canceled"
+        const updatedTicket = await Ticket.findByIdAndUpdate(
+            ticketId,
+            { status: "canceled" },
+            { new: true } // Trả về vé đã được cập nhật
+        );
+
+        if (!updatedTicket) {
+            return res.status(404).json({
+                error: 1,
+                message: "Không tìm thấy vé.",
+            });
+        }
+
+        res.json({
+            error: 0,
+            message: "Hủy vé thành công.",
+            data: updatedTicket,
+        });
+    } catch (error) {
+        console.error("Lỗi khi hủy vé:", error);
+        res.status(500).json({
+            error: -1,
+            message: "Không thể hủy vé.",
         });
     }
 });

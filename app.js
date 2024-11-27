@@ -96,12 +96,13 @@ io.on('connection', (socket) => {
     }
 
     if (roomShapeArray[row][col] === 'P' && originalSeatState[`${row}-${col}`]?.userId !== userId) {
+      const currentSeatUser = originalSeatState[`${row}-${col}`]?.userId;
       console.log('gheesddang bị ngoi dung khac chon', {
         currentSeatUser: originalSeatState[`${row}-${col}`]?.userId,
         attemptingUser: userId,
         seatPosition: { row, col },
       })
-      return socket.emit('error', { message: 'Ghế đang được chọn bởi người dùng khác' });
+      return socket.emit('error', { message: 'Ghế đang được chọn bởi người dùng khác', currentSeatUser },);
     }
 
     if (['T', 'V', 'D'].includes(roomShapeArray[row][col])) {
@@ -130,7 +131,7 @@ io.on('connection', (socket) => {
           }
           delete seatTimers[seatId]; // Xóa bộ đếm sau khi hoàn tác
         }
-      }, 2 * 60 * 1000); // 2 phút
+      },  4*60 * 1000); // 2 phút
     } else {
       socket.emit('error', { message: 'Ghế này không khả dụng' });
     }
