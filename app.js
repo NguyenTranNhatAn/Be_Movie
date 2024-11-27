@@ -131,7 +131,7 @@ io.on('connection', (socket) => {
           }
           delete seatTimers[seatId]; // Xóa bộ đếm sau khi hoàn tác
         }
-      }, 2 * 60 * 1000); // 2 phút
+      },  4*60 * 1000); // 2 phút
     } else {
       socket.emit('error', { message: 'Ghế này không khả dụng' });
     }
