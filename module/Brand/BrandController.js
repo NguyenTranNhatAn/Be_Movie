@@ -1,4 +1,5 @@
 const BrandModel = require("./BrandModel");
+const Cinema = require("../../module/Cinemas/CinemaModel");
 const getAll = async () => {
     try {
         const brands = await BrandModel.find({});
@@ -47,7 +48,10 @@ const remove = async (_id) => {
         if(brand.status==false){
             throw new Error('Thương hiệu đã được xóa trước đó ');
         }
-
+        const check= await Cinema.find({brandId:_id})
+        if(check.length){
+            throw new Error('Thương hiệu không được xóa vì đã liên kết với rạp');
+        }
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await BrandModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
         

@@ -17,6 +17,55 @@ const add = async (movieId, roomId, startTime, endTime, day, Room_Shape,seatType
     await showtime.save()
     return showtime;
 }
+const update = async (_id, movieId, roomId, startTime, endTime, day, Room_Shape, seatTypes) => {
+    try {
+        // Kiểm tra ID lịch chiếu
+        const showtime = await ShowtimeModel.findById(_id);
+        if (!showtime) {
+            throw new Error('Không tìm thấy lịch chiếu');
+        }
+
+        // Kiểm tra startTime và endTime không bằng nhau
+        if (startTime === endTime) {
+            throw new Error('Thời gian bắt đầu và kết thúc không được trùng nhau');
+        }
+
+        // Kiểm tra nếu có lịch chiếu khác trùng ngày, phim, phòng và thời gian
+        const conflictingShowtime = await ShowtimeModel.findOne({
+            _id: { $ne: _id }, // Bỏ qua chính bản ghi hiện tại
+            movieId,
+            roomId,
+            day,
+            $or: [
+                { startTime: { $lte: new Date(startTime) }, endTime: { $gte: new Date(startTime) } }, // startTime nằm trong khoảng
+                { startTime: { $lte: new Date(endTime) }, endTime: { $gte: new Date(endTime) } }, // endTime nằm trong khoảng
+                { startTime: { $gte: new Date(startTime) }, endTime: { $lte: new Date(endTime) } }, // Khoảng bị bao phủ
+            ],
+        });
+
+        if (conflictingShowtime) {
+            throw new Error('Đã tồn tại lịch chiếu khác trong khoảng thời gian này cho cùng phim và phòng');
+        }
+
+       
+
+        // Cập nhật lịch chiếu
+        showtime.movieId = movieId  ||showtime.movieId         ;
+        showtime.roomId = roomId   ||showtime.roomId         ;
+        showtime.startTime = startTime  || showtime.startTime   ;
+        showtime.endTime = endTime|| showtime.endTime;
+        showtime.day = day ||showtime.day;
+        showtime.Room_Shape = Room_Shape ||showtime.Room_Shape ;
+        showtime.seatTypes = seatTypes  ||showtime.seatTypes    ;
+
+        await showtime.save();
+
+        return showtime;
+    } catch (error) {
+        console.error('Lỗi khi cập nhật lịch chiếu:', error.message);
+        throw new Error(error.message);
+    }
+};
 
 const getMovieShowtime = async (movieId, day) => {
     try {
@@ -116,6 +165,77 @@ const getBrandByShowtime = async (movieId, day) => {
         throw new Error('Lỗi khi lấy brand');
     }
 };
+const getByCondition = async (movieId, day, startHour, endHour, brandId) => {
+    try {
+        const startDate = day ? new Date(day).setUTCHours(0, 0, 0, 0) : undefined;
+        const endDate = day ? new Date(day).setUTCHours(23, 59, 59, 999) : undefined;
+
+        // Chuyển đổi startHour và endHour thành timestamp nếu có
+        const startTime = startHour !== undefined ? new Date(day || Date.now()).setUTCHours(startHour, 0, 0, 0) : undefined;
+        const endTime = endHour !== undefined ? new Date(day || Date.now()).setUTCHours(endHour, 0, 0, 0) : undefined;
+
+        // Xây dựng query động
+        const query = {};
+        if (movieId) query.movieId = movieId;
+        if (day) query.day = { $gte: startDate, $lte: endDate };
+        if (startHour !== undefined || endHour !== undefined) {
+            query.startTime = {};
+            if (startTime) query.startTime.$gte = startTime; // Lọc lớn hơn hoặc bằng startHour
+            if (endTime) query.startTime.$lte = endTime; // Lọc nhỏ hơn hoặc bằng endHour
+        }
+
+        // Thực hiện query với populate các thông tin liên quan
+        const showtimes = await ShowtimeModel.find(query)
+            .populate({
+                path: 'roomId',
+                populate: {
+                    path: 'cinemaId',
+                    model: 'cinema',
+                    populate: {
+                        path: 'brandId',
+                        model: 'brand',
+                    },
+                },
+            });
+
+        if (showtimes.length === 0) {
+            throw new Error('Không tìm thấy lịch chiếu theo yêu cầu');
+        }
+
+        // Lọc theo brandId nếu được cung cấp
+        const filteredShowtimes = brandId
+            ? showtimes.filter((showtime) => showtime.roomId?.cinemaId?.brandId?._id.toString() === brandId)
+            : showtimes;
+
+        // Kiểm tra nếu sau khi lọc không còn kết quả
+        if (filteredShowtimes.length === 0) {
+            throw new Error('Không tìm thấy lịch chiếu cho brandId yêu cầu');
+        }
+
+        // Chuyển đổi kết quả để trả về danh sách showtime đơn giản
+        const formattedShowtimes = filteredShowtimes.map((showtime) => ({
+            showtimeId: showtime._id,
+            movieId: showtime.movieId,
+            day: showtime.day,
+            startTime: showtime.startTime,
+            endTime: showtime.endTime,
+            roomName: showtime.roomId?.name,
+            cinemaName: showtime.roomId?.cinemaId?.name,
+            brandName: showtime.roomId?.cinemaId?.brandId?.name,
+        }));
+
+        return formattedShowtimes;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Lỗi khi lấy danh sách lịch chiếu');
+    }
+};
+
+
+
+
+
+
 const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHour, brandId) => {
     try {
         const startDate = new Date(day);
@@ -243,4 +363,4 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
 
 
 
-module.exports = { add ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie}
+module.exports = { add,update ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie,getByCondition}

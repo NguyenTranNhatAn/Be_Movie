@@ -1,4 +1,5 @@
 const CinemaModel = require("./CinemaModel");
+const Room = require("../../module/Rooms/RoomModel");
 const getAll = async () => {
     try {
         const cinemas = await CinemaModel.find({});
@@ -29,7 +30,10 @@ const remove = async (_id) => {
         if (cinema.status==false) {
             throw new Error('Rạp đã được xóa trước đó');
         }
-
+        const rooms= await Room.find({cinemaId:_id})
+        if(rooms.length>0){
+            throw new Error('Rạp này không được xóa bởi vì được liên kết với phòng');
+        }
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await CinemaModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
         

@@ -1,5 +1,5 @@
 const GenreModel = require("./GenreModel");
-
+const Movie = require("../../module/Movies/MovieModel");
 const getAll = async () => {
     try {
         const movies = await GenreModel.find({});
@@ -58,6 +58,10 @@ const remove = async (_id) => {
         }
         if(genre.status==false){
             throw new Error('Thể loại đã được xóa trước đó ');
+        }
+        const check= await Movie.find({genreId:_id})
+        if(check.length){
+            throw new Error('Thể loại không được xóa do có phim đã liên kết');
         }
 
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema

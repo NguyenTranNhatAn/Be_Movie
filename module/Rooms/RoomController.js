@@ -37,7 +37,7 @@ const remove = async (_id) => {
         if(room.status==false){
             throw new Error('Phòng này đã được xóa');
         }
-
+       
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await RoomModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
         
