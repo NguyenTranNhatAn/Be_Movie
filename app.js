@@ -94,10 +94,10 @@ io.on('connection', (socket) => {
     if (!roomShapeArray[row] || !roomShapeArray[row][col]) {
       return socket.emit('error', { message: 'Ghế không tồn tại' });
     }
-
+    
     if (roomShapeArray[row][col] === 'P' && originalSeatState[`${row}-${col}`]?.userId !== userId) {
       const currentSeatUser = originalSeatState[`${row}-${col}`]?.userId;
-      console.log('gheesddang bị ngoi dung khac chon', {
+      console.log('ghế đang bị ngoi dung khac chon', {
         currentSeatUser: originalSeatState[`${row}-${col}`]?.userId,
         attemptingUser: userId,
         seatPosition: { row, col },
