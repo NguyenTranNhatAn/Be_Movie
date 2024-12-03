@@ -50,7 +50,7 @@ const remove = async (_id) => {
             throw new Error('Phim này đã được xóa');
         }
         const movies= await Ticket.find({movieId:_id})
-        if(movies){
+        if(movies.length>0){
             throw new Error('Phim không được xóa do được liên kết với ticket');
         }
 
