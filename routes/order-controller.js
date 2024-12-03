@@ -237,7 +237,7 @@ router.post("/webhook", async (req, res) => {
   }
 });
 
-// API để cập nhật trạng thái thanh toán
+
 // API để cập nhật trạng thái thanh toán
 router.post("/update-payment-status", async (req, res) => {
   const { orderCode } = req.body;
