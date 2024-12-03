@@ -50,10 +50,10 @@ const remove = async (_id) => {
             throw new Error('Phim này đã được xóa');
         }
         const movies= await Ticket.find({movieId:_id})
-        if(movies){
+        
+        if(movies.length>0){
             throw new Error('Phim không được xóa do được liên kết với ticket');
         }
-
         // Cập nhật với strict: false để thêm thuộc tính không có trong schema
         await MovieModel.updateOne({ _id }, { $set: { status: false } }, { strict: false });
         
