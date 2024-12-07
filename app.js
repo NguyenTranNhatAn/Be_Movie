@@ -59,7 +59,7 @@ const lockedSeats = {}; // Danh sách ghế bị khóa
 const lockedSeatsQueue = {}; // Lưu danh sách hàng đợi các user đang chọn cùng 1 ghế
 const randomInProgress = {}; // Theo dõi trạng thái random cho từng ghế
 const MAX_SEATS_PER_USER = 5; // Số ghế tối đa mỗi người dùng có thể chọn
-let originalSeatState = {}; // Trạng thái ban đầu của ghế
+let originalSeatState = []; // Trạng thái ban đầu của ghế
 const ShowTime = require('./models/ShowTime');
 const seatTimers = {}; // Bộ đếm thời gian cho mỗi ghế
 // Hàm gửi sơ đồ ghế chi tiết
