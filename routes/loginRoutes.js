@@ -6,6 +6,7 @@ const User = require('../module/Users/UserModel');
 const router = express.Router();
 
 
+  
 // Đăng nhập API
 router.post('/login', async (req, res) => {
     const { phone, password } = req.body;
@@ -26,6 +27,7 @@ router.post('/login', async (req, res) => {
         // Tạo JWT token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+
         res.status(200).json({ message: 'Đăng nhập thành công!', token });
     } catch (error) {
         res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
@@ -33,10 +35,24 @@ router.post('/login', async (req, res) => {
 });
 
 // Đăng xuất API
-router.post('/logout', (req, res) => {
-    // Đăng xuất chỉ cần xóa token trên client
-    res.status(200).json({ message: 'Đăng xuất thành công!' });
-});
+router.get('/protect', (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+  
+    if (!token) {
+      return res.status(401).json({ message: 'Token không được cung cấp' });
+    }
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(401).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+      }
+  
+      // Nếu token hợp lệ, bạn có thể trả về thông tin người dùng hoặc thông điệp khác
+      res.json({ message: 'Token hợp lệ', user });
+    });
+  });
+  
 // Lấy thông tin người dùng
 router.get('/user-info', async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];

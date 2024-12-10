@@ -55,6 +55,15 @@ router.get('/getByMovie', async function (req, res) {
         res.status(414).json({status:"false" } );
     }
 })
+router.get('/showdays', async (req, res) => {
+    try {
+        const { movieId } = req.query;
+        const days = await ShowtimeController.getShowDays(movieId);
+        res.status(200).json({ success: true, days });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching show days", error: error.message });
+    }
+});
 router.get('/getBrandShowtime', async function (req, res) {
     try {
         const { movieId,day } = req.query;

@@ -117,7 +117,7 @@ io.on('connection', (socket) => {
 
     // Kiểm tra xem ghế có đang được chọn không
     const currentSeat = originalSeatState[seatId];
-
+console.log(currentSeat)
     if (currentSeat) {
       const timeElapsed = Date.now() - currentSeat.timestamp;
 
