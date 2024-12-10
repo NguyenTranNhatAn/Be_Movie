@@ -1,5 +1,6 @@
 
 //const ShowtimeModel = require("./ShowtimeModel");
+const { default: mongoose } = require("mongoose");
 const ShowtimeModel = require("../../models/ShowTime");
 
 const getAll = async () => {
@@ -128,7 +129,7 @@ const getShowDays = async (movieId) => {
         const showDays = await ShowtimeModel.aggregate([
             {
                 $match: {
-                    movieId: movieId, // Lọc theo ID của phim
+                    movieId: new mongoose.Types.ObjectId(movieId), // Lọc theo movieId
                     day: { $gte: today } // Lọc các ngày >= hôm nay
                 }
             },
@@ -155,6 +156,7 @@ const getShowDays = async (movieId) => {
         throw error;
     }
 };
+
 
 
 
