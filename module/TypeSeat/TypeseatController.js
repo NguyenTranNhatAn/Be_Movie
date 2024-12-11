@@ -23,6 +23,34 @@ const getByCinemaId = async (cinemaId) => {
     }
     
 }
+const getCinemaRemain = async (cinemaId) => {
+    try {
+        // Truy vấn tất cả các ghế theo cinemaId và status
+        const type = await TypeSeatModel.find({
+            cinemaId: cinemaId,
+            status: { $ne: false }
+        });
+
+        // Danh sách các loại ghế cần kiểm tra
+        const requiredSeats = ["T", "V", "D"];
+        // Lấy danh sách tên ghế từ kết quả truy vấn
+        const existingSeatNames = type.map((seat) => seat.typeSeatName);
+
+        // Tìm các loại ghế chưa được thêm
+        const remainingSeats = requiredSeats.filter(
+            (seatName) => !existingSeatNames.includes(seatName)
+        );
+
+        // Nếu tất cả các loại ghế đã được thêm
+       
+
+        // Trả về danh sách các loại ghế còn thiếu
+        return remainingSeats;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const getDelete = async () => {
     try {
         const type = await TypeSeatModel.find({});
@@ -93,4 +121,4 @@ const update = async (_id,typeSeatName,cinemaId,typeSeatPrice) => {
         console.log(error);
     }
 }
-module.exports ={getAll,remove,getDetail,update,revert,getDelete,getByCinemaId}
+module.exports ={getAll,remove,getDetail,update,revert,getDelete,getByCinemaId,getCinemaRemain}
