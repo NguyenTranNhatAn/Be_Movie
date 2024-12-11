@@ -14,6 +14,7 @@ const getAll = async () => {
     }
     
 }
+
 const getDelete = async () => {
     try {
         const rooms = await RoomModel.find({});

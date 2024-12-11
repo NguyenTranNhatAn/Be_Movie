@@ -228,8 +228,7 @@ const getByCondition = async (movieId, day, startHour, endHour, brandId) => {
         return formattedShowtimes;
     } catch (error) {
         console.error(error);
-        throw 
-        new Error('Lỗi khi lấy danh sách lịch chiếu');
+        throw  new Error('Lỗi khi lấy danh sách lịch chiếu');
     }}
 const getWeekday= (date) => {
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
