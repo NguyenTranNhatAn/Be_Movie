@@ -1,5 +1,6 @@
 
 //const ShowtimeModel = require("./ShowtimeModel");
+const { default: mongoose } = require("mongoose");
 const ShowtimeModel = require("../../models/ShowTime");
 
 const getAll = async () => {
@@ -227,7 +228,46 @@ const getByCondition = async (movieId, day, startHour, endHour, brandId) => {
         return formattedShowtimes;
     } catch (error) {
         console.error(error);
-        throw new Error('Lỗi khi lấy danh sách lịch chiếu');
+        throw 
+        new Error('Lỗi khi lấy danh sách lịch chiếu');
+    }}
+const getWeekday= (date) => {
+    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return weekdays[new Date(date).getDay()];
+}
+const getShowDays = async (movieId) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00 để so sánh chính xác
+
+        const showDays = await ShowtimeModel.aggregate([
+            {
+                $match: {
+                    movieId: new mongoose.Types.ObjectId(movieId), // Lọc theo movieId
+                    day: { $gte: today } // Lọc các ngày >= hôm nay
+                }
+            },
+            {
+                $group: {
+                    _id: "$day", // Nhóm theo ngày (day)
+                }
+            },
+            {
+                $sort: {
+                    _id: 1 // Sắp xếp theo thứ tự tăng dần của ngày
+                }
+            }
+        ]);
+
+        // Trả về danh sách các ngày kèm thứ viết tắt
+        return showDays.map((showDay, index) => ({
+            date: showDay._id,
+            day: getWeekday(showDay._id),
+            id: index
+        }));
+    } catch (error) {
+        console.error("Error fetching upcoming show days:", error);
+        throw error;
     }
 };
 
@@ -363,4 +403,4 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
 
 
 
-module.exports = { add,update ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie,getByCondition}
+module.exports = { add,update ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie,getByCondition,getShowDays}
