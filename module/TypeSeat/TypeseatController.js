@@ -12,7 +12,11 @@ const getAll = async () => {
 }
 const getByCinemaId = async (cinemaId) => {
     try {
-        const type = await TypeSeatModel.find({cinemaId:cinemaId});  
+        const type = await TypeSeatModel.find({ 
+            cinemaId: cinemaId, 
+            status: { $ne: false } 
+        });
+         
         return type;
     } catch (error) {
         console.log(error);
