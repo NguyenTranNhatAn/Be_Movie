@@ -2,7 +2,9 @@
 //const ShowtimeModel = require("./ShowtimeModel");
 const { default: mongoose } = require("mongoose");
 const ShowtimeModel = require("../../models/ShowTime");
-
+const TypeseatControler= require("../../module/TypeSeat/TypeseatController");
+const RoomController= require("../../module/Rooms/RoomController");
+const TypeSeat = require('../../models/TypeSeat'); // Model TypeSeat
 const getAll = async () => {
     try {
         const showtimes = await ShowtimeModel.find({});
@@ -13,8 +15,12 @@ const getAll = async () => {
 
 }
 
-const add = async (movieId, roomId, startTime, endTime, day, Room_Shape,seatTypes) => {
-    const showtime = new ShowtimeModel({ movieId, roomId, startTime, endTime, day, Room_Shape,seatTypes });
+const add = async (movieId, roomId, startTime, endTime, day, Room_Shape) => {
+    const cinemaId = await RoomController.getroomDetail(roomId);
+    console.log(cinemaId)
+    const seatTypes= await TypeseatControler.getByCinemaId(cinemaId.cinemaId)
+    console.log(seatTypes)
+    const showtime = new ShowtimeModel({ movieId, roomId, startTime, endTime, day, Room_Shape, seatTypes});
     await showtime.save()
     return showtime;
 }

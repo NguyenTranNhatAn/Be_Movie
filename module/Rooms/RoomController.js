@@ -91,5 +91,14 @@ const listByCinema = async (cinemaId) => {
     }
     
 }
+const getroomDetail = async (_id) => {
+    try {
+        const rooms = await RoomModel.findById(_id);
+        return rooms;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
 
-module.exports ={add,listByCinema,getAll,getDelete,remove,revert,update}
+module.exports ={add,listByCinema,getAll,getroomDetail,getDelete,remove,revert,update}

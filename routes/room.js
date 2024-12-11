@@ -43,6 +43,17 @@ router.get('/getByCinema', async function (req, res) {
         res.status(414).json({status:"false" } );
     }
 })
+router.get('/roomDetail', async function (req, res) {
+    try {
+        const { _id } = req.query;
+        const room = await RoomController.getroomDetail(_id)
+        res.status(200).json(room)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({status:"false" } );
+    }
+})
 router.post('/delete', async function (req, res) {
     try {
   

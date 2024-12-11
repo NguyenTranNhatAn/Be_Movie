@@ -20,6 +20,16 @@ const getDelete = async () => {
     }
     
 }
+const getById = async (_id) => {
+    try {
+        const cinemas = await CinemaModel.findById(_id);
+       
+        return cinemas;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
 const remove = async (_id) => {
     try {
        
@@ -97,4 +107,4 @@ const update = async (_id,name,address,brandId) => {
     }
 }
 
-module.exports ={add,getAll,findByBrand,remove,update,revert,getDelete}
+module.exports ={add,getAll,findByBrand,remove,update,revert,getDelete,getById}

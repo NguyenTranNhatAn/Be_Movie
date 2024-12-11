@@ -78,4 +78,15 @@ router.get('/getByBrand', async function (req, res) {
         res.status(414).json({ status: "false" });
     }
 })
+router.get('/getById', async function (req, res) {
+    try {
+        const { _id } = req.query;
+        const cinema = await CinemaController.getById(_id)
+        res.status(200).json(cinema)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: "false" });
+    }
+})
 module.exports = router;

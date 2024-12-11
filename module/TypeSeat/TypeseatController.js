@@ -10,6 +10,15 @@ const getAll = async () => {
     }
     
 }
+const getByCinemaId = async (cinemaId) => {
+    try {
+        const type = await TypeSeatModel.find({cinemaId:cinemaId});  
+        return type;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
 const getDelete = async () => {
     try {
         const type = await TypeSeatModel.find({});
@@ -80,4 +89,4 @@ const update = async (_id,typeSeatName,cinemaId,typeSeatPrice) => {
         console.log(error);
     }
 }
-module.exports ={getAll,remove,getDetail,update,revert,getDelete}
+module.exports ={getAll,remove,getDetail,update,revert,getDelete,getByCinemaId}
