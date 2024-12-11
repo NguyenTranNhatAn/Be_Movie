@@ -4,8 +4,8 @@ var ShowtimeController = require('../module/Showtimes/ShowtimeController')
 
 router.post('/add', async function (req, res, next) {
     try {
-        const { movieId, roomId, startTime, endTime, day, Room_Shape, seatTypes } = req.body;
-        const showtime = await ShowtimeController.add(movieId, roomId, startTime, endTime, day, Room_Shape, seatTypes);
+        const { movieId, roomId, startTime, endTime, day, } = req.body;
+        const showtime = await ShowtimeController.add(movieId, roomId, startTime, endTime, day);
         res.status(200).json(showtime)
     } catch (error) {
         res.status(414).json({ status: "false", error: error });

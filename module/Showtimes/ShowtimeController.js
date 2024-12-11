@@ -15,11 +15,12 @@ const getAll = async () => {
 
 }
 
-const add = async (movieId, roomId, startTime, endTime, day, Room_Shape) => {
-    const cinemaId = await RoomController.getroomDetail(roomId);
-    console.log(cinemaId)
-    const seatTypes= await TypeseatControler.getByCinemaId(cinemaId.cinemaId)
-    console.log(seatTypes)
+const add = async (movieId, roomId, startTime, endTime, day, ) => {
+    const room = await RoomController.getroomDetail(roomId);
+    const Room_Shape= room.roomShape
+    console.log(Room_Shape)
+    const seatTypes= await TypeseatControler.getByCinemaId(room.cinemaId)
+    
     const showtime = new ShowtimeModel({ movieId, roomId, startTime, endTime, day, Room_Shape, seatTypes});
     await showtime.save()
     return showtime;
