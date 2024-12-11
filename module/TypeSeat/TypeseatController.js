@@ -23,6 +23,19 @@ const getByCinemaId = async (cinemaId) => {
     }
     
 }
+const getByCinemaIdDelete = async (cinemaId) => {
+    try {
+        const type = await TypeSeatModel.find({ 
+            cinemaId: cinemaId, 
+            status: { $ne: true } 
+        });
+         
+        return type;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
 const getCinemaRemain = async (cinemaId) => {
     try {
         // Truy vấn tất cả các ghế theo cinemaId và status
@@ -121,4 +134,4 @@ const update = async (_id,typeSeatName,cinemaId,typeSeatPrice) => {
         console.log(error);
     }
 }
-module.exports ={getAll,remove,getDetail,update,revert,getDelete,getByCinemaId,getCinemaRemain}
+module.exports ={getAll,remove,getDetail,update,revert,getDelete,getByCinemaId,getCinemaRemain,getByCinemaIdDelete}

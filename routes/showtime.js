@@ -117,8 +117,8 @@ router.get('/getCondition', async function (req, res) {
 })
 router.get('/getFilterTime', async function (req, res) {
     try {
-        const { movieId, day } = req.query;
-        const showtimes = await ShowtimeController.getShowtimeTimeRangesByDay(movieId, day);
+        const { movieId, day,brandId } = req.query;
+        const showtimes = await ShowtimeController.getShowtimeTimeRangesByDay(movieId, day,brandId);
         res.status(200).json(showtimes)
 
     } catch (error) {

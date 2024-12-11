@@ -351,7 +351,7 @@ const getCinemasByTimeRangeBrandAndMovie = async (movieId, day, startHour, endHo
 };
 
 
-const getShowtimeTimeRangesByDay = async (movieId, day) => {
+const getShowtimeTimeRangesByDay = async (movieId, day, brandId) => {
     try {
         const startDate = new Date(day);
         const endDate = new Date(day);
@@ -370,22 +370,37 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
             { label: '22:00 - 1:00', start: 15, end: 18 },
         ];
 
+        // Query showtimes
         const showtimes = await ShowtimeModel.find({
             movieId: movieId,
             day: { $gte: startDate, $lte: endDate }
-        });
+        })
+            .populate({
+                path: 'roomId',
+                populate: {
+                    path: 'cinemaId',
+                    model: 'cinema',
+                    populate: {
+                        path: 'brandId',
+                        model: 'brand'
+                    },
+                    match: brandId ? { brandId: brandId } : {}
+                }
+            });
 
         // Set to track used time ranges
         const usedTimeRanges = new Set();
 
         // Filter showtimes by time range
         showtimes.forEach(showtime => {
-            const showtimeHour = new Date(showtime.startTime).getUTCHours();
-            timeRanges.forEach(range => {
-                if (showtimeHour >= range.start && showtimeHour < range.end) {
-                    usedTimeRanges.add(range);
-                }
-            });
+            if (showtime.roomId?.cinemaId?.brandId) { // Ensure valid populated brandId
+                const showtimeHour = new Date(showtime.startTime).getUTCHours();
+                timeRanges.forEach(range => {
+                    if (showtimeHour >= range.start && showtimeHour < range.end) {
+                        usedTimeRanges.add(range);
+                    }
+                });
+            }
         });
 
         // Convert Set to array, sort by label in ascending order, and return
@@ -400,6 +415,7 @@ const getShowtimeTimeRangesByDay = async (movieId, day) => {
         throw new Error('Error retrieving showtime time ranges');
     }
 };
+
 
 
 

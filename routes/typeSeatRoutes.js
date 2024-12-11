@@ -54,6 +54,17 @@ router.get('/getByCinemaId', async function (req, res) {
       res.status(414).json({status:"false" } );
   }
 })
+router.get('/getDeleteByCinema', async function (req, res) {
+  try {
+    const { cinemaId } = req.query;
+      const typeseat = await TypeseatControler.getByCinemaIdDelete(cinemaId)
+      res.status(200).json(typeseat)
+
+  } catch (error) {
+      console.log(error);
+      res.status(414).json({status:"false" } );
+  }
+})
 router.get('/getRemain', async function (req, res) {
   try {
     const { cinemaId } = req.query;
