@@ -280,7 +280,10 @@ io.on('connection', (socket) => {
     });
   */
 
-  // Khi người dùng chọn ghế
+
+  // Khi người dùng chọn ghế 
+  //đúng này
+
   socket.on('select_seat', async ({ showtimeId, row, col, userId }) => {
     console.log('User attempting to select seat:', { row, col, userId });
     const showtime = await ShowTime.findById(showtimeId);
@@ -320,7 +323,7 @@ io.on('connection', (socket) => {
         timestamp: Date.now()  // Ghi nhận thời gian bấm chọn ghế
       };
 
-      console.log(originalSeatState);
+      console.log("ghế được chọn:", originalSeatState);
       roomShapeArray[row][col] = 'P'; // Đặt ghế thành đang chọn
       showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
       await showtime.save();
@@ -350,6 +353,10 @@ io.on('connection', (socket) => {
       socket.emit('error', { message: 'Ghế này không khả dụng' });
     }
   });
+
+
+
+  // đúng này
 
 
 
