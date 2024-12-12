@@ -21,27 +21,28 @@ function generateOTP() {
 }
 router.get('/getAll', async function (req, res) {
   try {
-      const user = await UserController.getAll()
-      res.status(200).json( user )
+    const user = await UserController.getAll()
+    res.status(200).json(user)
 
   } catch (error) {
-      console.log(error);
-      res.status(414).json({ user: { name: null, cat_id: null } });
+    console.log(error);
+    res.status(414).json({ user: { name: null, cat_id: null } });
   }
 })
 router.post('/register', async function (req, res) {
   try {
-    const { name, phone, email, password,address } = req.body;
-  var status="true";
-  var mess;
-  user = await UserController.register(name, phone ,email, password,address);
-  res.status(200).json({ status: status,user:user })
+    const { name, email, phone, password, address } = req.body;
+    var status = "true";
+    var mess;
+   
+    user = await UserController.register(name, email, phone, password, address);
+    res.status(200).json({ status: status, user: user })
   } catch (error) {
-    mess ='Đăng kí không thành công'
+    mess = 'Đăng kí không thành công'
     console.log(error);
-    res.status(414).json({status:"false" } ); 
+    res.status(414).json({ status: "false" });
   }
-  
+
 
 })
 // Register API with OTP
@@ -166,21 +167,21 @@ router.post('/updateUser', async function (req, res) {
 router.get('/getWishList', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
-      return res.status(401).json({ message: 'Token không hợp lệ.' });
+    return res.status(401).json({ message: 'Token không hợp lệ.' });
   }
 
   try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await UserModel.findById(decoded.id).select('-password'); // Không trả mật khẩu
-      if (!user) {
-          return res.status(404).json({ message: 'Người dùng không tồn tại.' });
-      }
-      const wishlist = await UserController.getWishList(decoded.id)
-      console.log(wishlist)
-      res.status(200).json(wishlist.wishlist)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await UserModel.findById(decoded.id).select('-password'); // Không trả mật khẩu
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+    }
+    const wishlist = await UserController.getWishList(decoded.id)
+    console.log(wishlist)
+    res.status(200).json(wishlist.wishlist)
 
   } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
+    res.status(500).json({ message: 'Có lỗi xảy ra.', error: error.message });
   }
 });
 module.exports = router;
