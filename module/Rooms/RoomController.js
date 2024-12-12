@@ -76,8 +76,8 @@ const revert = async (_id) => {
         throw error; 
     }
 };
-const add = async (name,totalSeat,roomShape,cinema_id) => {
-    const room= new RoomModel({name,totalSeat,roomShape,cinema_id});
+const add = async (name,totalSeat,roomShape,cinemaId) => {
+    const room= new RoomModel({name,totalSeat,roomShape,cinemaId});
     await room.save()
     return room;
 }
