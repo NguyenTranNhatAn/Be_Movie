@@ -5,7 +5,7 @@ var RoomController = require('../module/Rooms/RoomController')
 router.post('/add', async function(req, res, next) {
     try {
         const {name,totalSeat,roomShape,cinemaId}=req.body;
-        const room = await RoomController.add(name,totalSeat,roomShape,cinema_id);
+        const room = await RoomController.add(name,totalSeat,roomShape,cinemaId);
         res.status(200).json(room)
     } catch (error) {
         res.status(414).json({status:"false" } );
