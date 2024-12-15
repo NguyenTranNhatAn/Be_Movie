@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var ShowtimeController = require('../module/Showtimes/ShowtimeController')
+var ShowtimeController = require('../module/Showtimes/ShowtimeController');
+const ShowTime = require('../models/ShowTime');
 
 router.post('/add', async function (req, res, next) {
     try {
@@ -48,6 +49,17 @@ router.get('/getByMovie', async function (req, res) {
     try {
         const { movieId } = req.query;
         const showtimes = await ShowtimeController.getByMovie(movieId);
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: "false" });
+    }
+})
+router.get('/getDetail', async function (req, res) {
+    try {
+        const { _id } = req.query;
+        const showtimes = await ShowtimeController.getDetail(_id);
         res.status(200).json(showtimes)
 
     } catch (error) {

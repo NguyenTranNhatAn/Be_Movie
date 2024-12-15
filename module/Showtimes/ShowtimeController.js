@@ -241,6 +241,14 @@ const getWeekday= (date) => {
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return weekdays[new Date(date).getDay()];
 }
+const getDetail = async (_id) => {
+    try {
+        const showtime = await ShowtimeModel.findOne({ _id: _id });
+        return showtime;
+    } catch (error) {
+        console.log(error);
+    }
+}
 const getShowDays = async (movieId) => {
     try {
         const today = new Date();
@@ -425,4 +433,4 @@ const getShowtimeTimeRangesByDay = async (movieId, day, brandId) => {
 
 
 
-module.exports = { add,update ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie,getByCondition,getShowDays}
+module.exports = { add,update,getDetail ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie,getByCondition,getShowDays}
