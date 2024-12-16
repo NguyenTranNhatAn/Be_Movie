@@ -74,7 +74,34 @@ const update = async (_id, movieId, roomId, startTime, endTime, day, Room_Shape,
         throw new Error(error.message);
     }
 };
+const updateRoomShapeForShowtimes = async () => {
+    try {
+        // Lấy tất cả các showtime
+        const showtimes = await ShowtimeModel.find({});
 
+        // Duyệt qua từng showtime để cập nhật roomShape
+        for (const showtime of showtimes) {
+            // Lấy thông tin room tương ứng của showtime
+            const room = await RoomController.getroomDetail(showtime.roomId);
+
+            if (!room) {
+                console.warn(`Không tìm thấy phòng cho showtime ID: ${showtime._id}`);
+                continue;
+            }
+
+            // Cập nhật roomShape của showtime thành roomShape của room tương ứng
+            showtime.Room_Shape = room.roomShape;
+
+            // Lưu lại showtime đã cập nhật
+            await showtime.save();
+        }
+
+        console.log('Cập nhật roomShape thành công cho tất cả showtime.');
+    } catch (error) {
+        console.error('Lỗi khi cập nhật roomShape cho các showtime:', error.message);
+        throw new Error(error.message);
+    }
+};
 const getMovieShowtime = async (movieId, day) => {
     try {
         const check = await ShowtimeModel.find({ movieId: movieId });
@@ -434,4 +461,4 @@ const getShowtimeTimeRangesByDay = async (movieId, day, brandId) => {
 
 
 
-module.exports = { add,update,getDetail ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie,getByCondition,getShowDays}
+module.exports = { updateRoomShapeForShowtimes,add,update,getDetail ,getMovieShowtime,getBrandByShowtime,getCinemasByTimeRangeBrandAndMovie,getShowtimeTimeRangesByDay,getAll,getByMovie,getByCondition,getShowDays}

@@ -44,6 +44,7 @@ router.post('/addShowTimes', async (req, res) => {
 });
 
 
+
 // API hiển thị layout ghế của suất chiếu
 /*
 router.get('/:showtimeId', async (req, res) => {

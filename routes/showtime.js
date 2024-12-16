@@ -56,6 +56,17 @@ router.get('/getByMovie', async function (req, res) {
         res.status(414).json({ status: "false" });
     }
 })
+router.get('/getFix', async function (req, res) {
+    try {
+       
+        const showtimes = await ShowtimeController.updateRoomShapeForShowtimes();
+        res.status(200).json(showtimes)
+
+    } catch (error) {
+        console.log(error);
+        res.status(414).json({ status: "false" });
+    }
+})
 router.get('/getDetail', async function (req, res) {
     try {
         const { _id } = req.query;
