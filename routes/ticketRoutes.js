@@ -1,5 +1,7 @@
 const express = require('express');
 const Ticket = require('../models/Ticket'); // Đảm bảo đường dẫn đúng tới model
+const Room = require('../module/Rooms/RoomModel');
+const ShowTime = require('../models/ShowTime');
 const router = express.Router();
 const CryptoJS = require('crypto-js');
 const axios = require('axios');
@@ -204,6 +206,67 @@ router.get("/cancelled/:userId", async (req, res) => {
         });
     }
 });
+//hàm lấy 
+// Hàm khôi phục Room_Shape trong bảng ShowTime từ Room
+// Hàm khôi phục nhiều ghế trong Room_Shape từ Room
+const restoreMultipleSeats = async (roomId, showtimeId, seatsDetails) => {
+    try {
+        // 1. Lấy layout gốc từ bảng Room
+        const room = await Room.findById(roomId);
+        if (!room) throw new Error("Không tìm thấy phòng chiếu.");
+
+        const originalRoomShape = room.roomShape; // Layout gốc
+        const originalRows = originalRoomShape.split("/"); // Tách thành các hàng
+
+        // 2. Lấy Room_Shape hiện tại từ bảng ShowTime
+        const showtime = await ShowTime.findById(showtimeId);
+        if (!showtime) throw new Error("Không tìm thấy suất chiếu.");
+
+        let currentRows = showtime.Room_Shape.split("/"); // Tách thành các hàng hiện tại
+
+        // 3. Lặp qua từng ghế trong seatsDetails và khôi phục
+        seatsDetails.forEach(seat => {
+            const seatName = seat.seatName;
+            const rowIndex = seatName.charCodeAt(0) - 65; // Ví dụ: "A" -> 0, "B" -> 1
+            const seatPosition = parseInt(seatName.slice(1)) - 1; // Ví dụ: "1" -> 0
+
+            // Xác định vị trí ghế bỏ qua ký tự "_"
+            let currentSeatIndex = 0;
+            let actualSeatIndex = -1;
+
+            for (let i = 0; i < currentRows[rowIndex].length; i++) {
+                if (currentRows[rowIndex][i] !== "_") {
+                    if (currentSeatIndex === seatPosition) {
+                        actualSeatIndex = i;
+                        break;
+                    }
+                    currentSeatIndex++;
+                }
+            }
+
+            // Thay thế ghế bằng ký tự gốc nếu tìm thấy
+            if (actualSeatIndex !== -1) {
+                const originalChar = originalRows[rowIndex][actualSeatIndex];
+                const currentRowArray = currentRows[rowIndex].split("");
+                currentRowArray[actualSeatIndex] = originalChar;
+                currentRows[rowIndex] = currentRowArray.join("");
+            }
+        });
+
+        // 4. Cập nhật lại Room_Shape trong bảng ShowTime
+        showtime.Room_Shape = currentRows.join("/");
+        await showtime.save();
+
+        console.log("Khôi phục các ghế thành công.");
+        return showtime;
+    } catch (error) {
+        console.error("Lỗi khôi phục Room_Shape:", error.message);
+        throw error;
+    }
+};
+
+
+//hàm 
 //API để hủy vé
 router.put("/cancel-ticket/:ticketId", async (req, res) => {
     const { ticketId } = req.params;
@@ -214,7 +277,12 @@ router.put("/cancel-ticket/:ticketId", async (req, res) => {
             ticketId,
             { status: "canceled" },
             { new: true } // Trả về vé đã được cập nhật
-        );
+        )
+            .populate("roomId", "roomShape")   // Lấy thông tin phòng chiếu
+            .populate("showtimeId", "Room_Shape"); // Lấy thông tin suất chiếu
+        //tìm thêm room
+        //tìm thêm showtime
+        //logic là tìm ra seatName rồi so sanh với bảng room lấy ra vị trí , rồi cập nhật trên bảng showtime 
 
         if (!updatedTicket) {
             return res.status(404).json({
@@ -223,9 +291,17 @@ router.put("/cancel-ticket/:ticketId", async (req, res) => {
             });
         }
 
+        // Khôi phục Room_Shape trong bảng ShowTime
+        const { roomId, showtimeId, seatsDetails } = updatedTicket;
+        const showtimeIdValue = showtimeId._id; // Lấy _id từ object populate
+        const roomIdValue = roomId._id; // Lấy _id từ object populate
+        // for (const seat of seatsDetails) {
+        //     await restoreRoomShape(roomIdValue, showtimeIdValue, seat.seatName);
+        // }
+        await restoreMultipleSeats(roomId._id, showtimeId._id, seatsDetails);
         res.json({
             error: 0,
-            message: "Hủy vé thành công.",
+            message: "Hủy vé và khôi phục Room_Shape thành công.",
             data: updatedTicket,
         });
     } catch (error) {

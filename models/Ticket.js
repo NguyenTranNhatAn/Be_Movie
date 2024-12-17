@@ -11,8 +11,9 @@ const ticketSchema = new mongoose.Schema({
     ],
     totalPrice: { type: Number, required: true }, // Tổng giá vé
     cinemaName: { type: String, required: true },
+    //showtime
     roomName: { type: String, required: true },
-    showTime: { type: String, required: true },
+    showtimeId: { type: mongoose.Schema.Types.ObjectId, ref: 'showtime', required: true }, // OK
     showDate: { type: Date, required: true },
     movieName: { type: String, required: true },
     userId: { type: String, required: true },
@@ -27,6 +28,7 @@ const ticketSchema = new mongoose.Schema({
             quantity: { type: Number, required: true }
         }
     ],
+    roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'room', required: true }, // Ref đến Room
 });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);

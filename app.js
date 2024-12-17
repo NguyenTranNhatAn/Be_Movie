@@ -133,7 +133,15 @@ io.on('connection', (socket) => {
       // }
       console.log('Fail to select seat of userId: ', userId);
       emitSeatMapUpdate(io, showtimeId); // Phát sự kiện cập nhật sơ đồ ghế
-      return socket.emit(`error_${userId}`, { message: 'Ghế đã được chọn bởi người khác' });
+      return socket.emit(`error_${userId}`, {
+        seatId,
+        seatType: roomShapeArray[row][col], // Loại ghế hiện tại
+        rowIndex: row,
+        colIndex: col,
+        message: 'Ghế đã được chọn bởi người khác', // Thông báo lỗi
+      });
+      //      return socket.emit(`error_${userId}`, { message: 'Ghế đã được chọn bởi người khác' });
+
     }
 
     if (['T', 'V', 'D'].includes(roomShapeArray[row][col])) {
@@ -179,7 +187,7 @@ io.on('connection', (socket) => {
           }
           delete seatTimers[seatId]; // Xóa bộ đếm sau khi hoàn tác
         }
-      }, 2 * 60 * 1000); // 2 phút
+      }, 10 * 1000); // 2 phút
 
       // Xác định ai là người giữ ghế dựa trên timestamp
       const allAttempts = Object.values(originalSeatState).filter(seat => seat.state === 'P');
@@ -300,6 +308,7 @@ io.on('connection', (socket) => {
   // Khi người dùng bỏ chọn ghế
   socket.on('deselect_seat', async ({ showtimeId, row, col, userId }) => {
     console.log('User attempting to deselect seat:', { row, col, userId });
+
     const showtime = await ShowTime.findById(showtimeId);
     if (!showtime) {
       return socket.emit('error', { message: 'Không tìm thấy suất chiếu' });

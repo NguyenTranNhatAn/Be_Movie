@@ -115,7 +115,8 @@ router.post("/create", async function (req, res) {
     movieName,
     userId,
     movieId,
-    combos // Thêm combos với comboId và quantity nếu có
+    combos,// Thêm combos với comboId và quantity nếu có
+    roomId
   } = req.body;
 
   const orderCode = Number(String(new Date().getTime()).slice(-6));
@@ -160,7 +161,8 @@ router.post("/create", async function (req, res) {
       movieId,
       combos: comboDetails, // Lưu combo với comboId và quantity
       status: "pending",
-      orderCode: orderCode
+      orderCode: orderCode,
+      roomId: roomId
     });
 
     // Lưu vé để có `_id`

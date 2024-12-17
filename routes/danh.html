@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Demo Khôi Phục Room_Shape</title>
+    </head>
+    <body>
+        <h1>Demo Khôi Phục Room_Shape</h1>
+        <pre id="output"></pre>
+
+        <script>
+        // Hàm khôi phục Room_Shape từ dữ liệu tĩnh cho một ghế
+        const restoreRoomShape = (originalRoomShape, currentRoomShape, seatName) => {
+            try {
+                // Tách layout thành mảng các hàng
+                const originalRows = originalRoomShape.split("/");
+                const currentRows = currentRoomShape.split("/");
+
+                // Xác định hàng ghế cần khôi phục
+                const rowIndex = seatName.charCodeAt(0) - 65; // "A" -> 0
+                const seatPosition = parseInt(seatName.slice(1)) - 1; // "1" -> 0
+
+                // Lấy hàng gốc và hàng hiện tại
+                const originalRow = originalRows[rowIndex];
+                const currentRow = currentRows[rowIndex];
+
+                // Xác định vị trí chính xác ghế (bỏ qua ký tự "_")
+                let currentSeatIndex = 0; // Đếm các ghế thật
+                let actualSeatIndex = -1; // Vị trí trong chuỗi
+                for (let i = 0; i < currentRow.length; i++) {
+                    if (currentRow[i] !== "_") {
+                        if (currentSeatIndex === seatPosition) {
+                            actualSeatIndex = i;
+                            break;
+                        }
+                        currentSeatIndex++;
+                    }
+                }
+
+                // Kiểm tra ghế có hợp lệ không
+                if (actualSeatIndex === -1) {
+                    throw new Error(`Không tìm thấy vị trí ghế ${seatName} trong hàng.`);
+                }
+
+                // Thay thế ghế trong hàng hiện tại bằng ký tự từ hàng gốc
+                const originalChar = originalRow[actualSeatIndex]; // Ký tự gốc
+                const currentRowArray = currentRow.split("");
+                currentRowArray[actualSeatIndex] = originalChar;
+                currentRows[rowIndex] = currentRowArray.join(""); // Cập nhật hàng
+
+                return currentRows.join("/"); // Ghép lại thành layout mới
+            } catch (error) {
+                console.error("Lỗi khôi phục Room_Shape:", error.message);
+                return currentRoomShape; // Trả về layout cũ nếu có lỗi
+            }
+        };
+
+        // Hàm khôi phục nhiều ghế từ seatsDetails
+        const restoreMultipleSeats = (originalRoomShape, currentRoomShape, seatsDetails) => {
+            let restoredRoomShape = currentRoomShape; // Layout hiện tại
+            seatsDetails.forEach(seat => {
+                restoredRoomShape = restoreRoomShape(originalRoomShape, restoredRoomShape, seat.seatName);
+            });
+            return restoredRoomShape;
+        };
+
+        // Dữ liệu tĩnh để thử nghiệm
+        const originalRoomShape = "__T__/__V__/__D__/__T__/__T__/";
+        let currentRoomShape = "__U__/__U__/__D__/__T__/__T__/";
+        const seatsDetails = [
+            { seatName: "A1", price: 100000 },
+            { seatName: "B1", price: 100000 }
+        ]; // Danh sách ghế cần khôi phục
+
+        // Thử nghiệm khôi phục nhiều ghế
+        const restoredRoomShape = restoreMultipleSeats(originalRoomShape, currentRoomShape, seatsDetails);
+
+        // Hiển thị kết quả
+        const outputElement = document.getElementById("output");
+        outputElement.textContent = `
+            Layout gốc (Room): ${originalRoomShape}
+            Layout hiện tại (ShowTime): ${currentRoomShape}
+            Ghế cần khôi phục: ${seatsDetails.map(seat => seat.seatName).join(", ")}
+            Layout sau khi khôi phục: ${restoredRoomShape}
+        `;
+    </script>
+    </body>
+</html>
