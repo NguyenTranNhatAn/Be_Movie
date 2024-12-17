@@ -73,7 +73,7 @@ async function emitSeatMapUpdate(io, showtimeId) {
   );
   const detailedSeatMap = roomShapeArray.map((row, rowIndex) =>
     row.map((seat, colIndex) => {
-      const seatId = `${rowIndex}-${colIndex}`;
+      const seatId = `${showtimeId}-${rowIndex}-${colIndex}`;
       const seatState = originalSeatState[seatId];
       return {
         status: seat, // Trạng thái ghế (T, V, D, P)
@@ -117,7 +117,7 @@ io.on('connection', (socket) => {
       return socket.emit('error', { message: 'Ghế không tồn tại' });
     }
 
-    const seatId = `${row}-${col}`;
+    const seatId = `${showtimeId}-${row}-${col}`;
 
     // Kiểm tra xem ghế có đang được chọn không
     const currentSeat = originalSeatState[seatId];
@@ -187,7 +187,7 @@ io.on('connection', (socket) => {
           }
           delete seatTimers[seatId]; // Xóa bộ đếm sau khi hoàn tác
         }
-      }, 10 * 1000); // 2 phút
+      }, 3 * 60 * 1000); // 2 phút
 
       // Xác định ai là người giữ ghế dựa trên timestamp
       const allAttempts = Object.values(originalSeatState).filter(seat => seat.state === 'P');
@@ -316,10 +316,10 @@ io.on('connection', (socket) => {
 
     let roomShapeArray = showtime.Room_Shape.split('/').map((row) => row.split(''));
 
-    const original = originalSeatState[`${row}-${col}`];
+    const original = originalSeatState[`${showtimeId}-${row}-${col}`];
     if (roomShapeArray[row][col] === 'P' && original && original.userId === userId) {
       roomShapeArray[row][col] = original.state;
-      delete originalSeatState[`${row}-${col}`];
+      delete originalSeatState[`${showtimeId}-${row}-${col}`];
       showtime.Room_Shape = roomShapeArray.map((row) => row.join('')).join('/');
       await showtime.save();
 
@@ -355,7 +355,7 @@ io.on('connection', (socket) => {
       // Duyệt qua tất cả ghế để kiểm tra xem ghế nào đã được người dùng chọn và cần giải phóng
       for (let row = 0; row < roomShapeArray.length; row++) {
         for (let col = 0; col < roomShapeArray[row].length; col++) {
-          const seatId = `${row}-${col}`;
+          const seatId = `${showTimeID}-${row}-${col}`;
           const seatState = originalSeatState[seatId];
 
           // Kiểm tra ghế này có đang trong trạng thái 'P' (được chọn) và thuộc về người dùng này không
